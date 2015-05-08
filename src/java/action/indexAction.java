@@ -6,20 +6,42 @@
 package action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import java.util.ArrayList;
+import model.Item;
 
-public class indexAction extends ActionSupport {
-	private String name;
-	private String password;
+public class IndexAction extends ActionSupport {
+    
+    private String search;
+
+    private ArrayList<Item> items = new ArrayList<Item>();
 
 	// 検索して一覧を取得
-	public String execute() throws Exception {
-		
-			return SUCCESS;
-	}
+    public String show() throws Exception {
+        String str = "テストユーザ";
+        for(int i = 0;i < 5;i++) {
+                Item item = new Item();
+                item.setId(Integer.toString(i));
+                item.setName(str + Integer.toString(i));
 
-	public String getName() { return name; }
-	public void setName(String name) { this.name = name; }
+                items.add(item);
+            }
+        setItems(items);
+        return SUCCESS;	
+    }
+    
+    public ArrayList<Item> getItems() {
+        return items;
+    }
 
-	public String getPassword() { return password; }
-	public void setPassword(String password) { this.password = password; }
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
+    }
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String serch) {
+        this.search = serch;
+    }    
+    
 }

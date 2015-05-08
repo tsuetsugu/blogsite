@@ -14,9 +14,9 @@
     </head>
     <body>
         <s:form action="commit_article">
-            <s:textfield name="date" value="" size="10" id="date" label="日付"/><br><br>
-            <s:textfield name="category" value="" size="24" id="category" label="カテゴリ"/><br><br>
-            <s:textfield name="title" value="" size="24" id="title" label="タイトル"/><br><br>
+            <s:label value="日付："/><s:textfield name="date" value="" size="10" id="date"/><br><br>
+            <s:label value="カテゴリ："/><s:textfield name="category" value="" size="24" id="category"/><br><br>
+            <s:label value="タイトル："/><s:textfield name="title" value="" size="24" id="title"/><br><br>
             <s:label value="記事"/><br><s:textarea name="article" rows="20" id="article"/><br>
             <s:submit value="更新" id="commit" align="center"/>
         </s:form>

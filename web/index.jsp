@@ -17,11 +17,19 @@
         <s:form action="myPage">
             <s:submit value="マイページ"/><br/><br/>
         </s:form>
-        <s:form action="search">
-            <s:textfield name="username" value="" size="24" id="username"/>
+        <s:form action="search_use">
+            <s:textfield name="search" size="24" id="search"/>
             <s:submit value="検索"/>
         </s:form>
-        
+    
+        <br>    
+            
+        <s:iterator value="items">
+            <s:property value="id"/>
+            <s:property value="name"/><br>
+     
+        </s:iterator>
+
         
     </body>
 </html>

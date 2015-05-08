@@ -17,8 +17,8 @@
         <h1>ログイン画面</h1>
         <s:actionerror />
         <s:form action="login_action">
-            <s:textfield name="userid" value="" size="24" id="userid" label="ユーザID"/>
-            <s:password name="password" value="" size="24" id="password" label="パスワード"/>
+            <s:label value="ユーザID："/><s:textfield name="userid" value="" size="24" id="userid"/><br/><br/>
+            <s:label value="パスワード："/><s:password name="password" value="" size="24" id="password"/><br/><br/>
             <s:submit value="ログイン" id="login" align="center"/>
         </s:form>
         
