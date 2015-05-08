@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+  <constant name="struts.devMode" value="true" />
+  <package name="test" extends="struts-default">
+ 
+  <action name="myPage">
+    <result>/login.jsp</result>
+  </action>
+  <action name="search">
+    <result>/index.jsp</result>
+  </action>      
+  <action name="login_action" class="action.LoginAction" method="execute">
+    <result name="success">/myPage.jsp</result>
+    <result name="error">/login.jsp</result>
+  </action>
+  <action name="write_article">
+    <result>/articleEdit.jsp</result>
+  </action>
+    <action name="edit_article">
+    <result>/articleEdit.jsp</result>
+  </action>
+  <action name="edit_profile">
+    <result>/profile.jsp</result>
+  </action>
+  <action name="write_comment">
+    <result>/comment.jsp</result>
+  </action>
+  <action name="logout">
+    <result>/login.jsp</result>
+  </action>    
+   <action name="cancel_profile">
+    <result>/myPage.jsp</result>
+  </action>
+  <action name="commit_profile">
+    <result>/myPage.jsp</result>
+  </action> 
+  <action name="cancel_article">
+    <result>/myPage.jsp</result>
+  </action>
+  <action name="commit_article">
+    <result>/myPage.jsp</result>
+  </action>
+  <action name="cancel_comment">
+    <result>/myPage.jsp</result>
+  </action>
+  <action name="commit_comment">
+    <result>/myPage.jsp</result>
+  </action>   
+  </package>
+</struts>
