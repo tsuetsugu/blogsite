@@ -12,6 +12,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 <body>
-<h2>Hello <s:property value="name" /> !!</h2>
+<s:actionerror />
+        <s:form action="myPage">
+            <s:submit value="ログイン"/>
+        </s:form>
 </body>
 </html>

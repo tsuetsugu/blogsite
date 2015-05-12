@@ -5,17 +5,20 @@
         <group>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/articleEdit.jsp</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/index.jsp</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/LoginAction.java</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/myPage.jsp</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/ProfileAction.java</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/profile.jsp</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/comment.jsp</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/IndexAction.java</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/struts.properties</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/result.jsp</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/model/Item.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/model/User.java</file>
             <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/web/login.jsp</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/example/HelloWorld.java</file>
-            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/struts.xml</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/model/Item.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/ChangePasswordAction.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/message.properties</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/AbstractDBAction.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/ArticleEditAction.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/SubmitAction.java</file>
+            <file>file:/C:/Users/lepra25-pc/Documents/NetBeansProjects/blogsite/src/java/action/CommentAction.java</file>
         </group>
     </open-files>
 </project-private>

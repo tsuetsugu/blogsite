@@ -10,9 +10,8 @@
   <action name="search_use" class="action.IndexAction" method="show">
     <result name="success">/index.jsp</result>
   </action>
-  <action name="login_action" class="action.LoginAction" method="execute">
-    <result name="success">/myPage.jsp</result>
-    <result name="error">/login.jsp</result>
+  <action name="changed_pass">
+    <result name="success">/chPass.jsp</result>
   </action>
   <action name="write_article">
     <result>/articleEdit.jsp</result>

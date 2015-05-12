@@ -17,9 +17,14 @@
         <s:form action="write_article">
             <s:submit value="新規記事登録"/>
         </s:form>
+        
+        タイトル<br/><br/>
+        
         <s:form action="edit_article">
             <s:submit value="記事編集"/>
-        </s:form>
+        </s:form><br/><br/>
+        
+        コメント<br/>
         <s:form action="write_comment">
             <s:submit value="コメントする"/>
         </s:form>
