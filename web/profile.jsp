@@ -13,15 +13,20 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <s:form action="commit_profile">
-            <s:label value="ユーザ名："/><s:textfield name="username" value="" size="24" id="user_name"/><br><br>
-            <s:label value="出身地："/><s:textfield name="category"/><br><br>
-            <s:label value="画像"/><s:textfield name="title"/><br><br>
-            <s:label value="アップロードファイル"/><s:textfield name="upload"/><br><br>  
+        <s:form action="update">
+            <s:label value="ユーザ名："/><s:textfield name="username" value="%{#session.currentUser.username}" size="24" id="user_name"/><br><br>
+            <s:label value="出身地："/><s:select list="%{#session.tdfcode}" name="home" listKey = "code" listValue="code_name"></s:select><br><br>
+            <s:label value="画像"/><s:textfield name="title"/><br><br>  
             <s:label value="自己紹介"/><br>
-            <s:textarea rows="20" name="myself"/><br>        
+            <s:textarea rows="20" name="myself" value="%{#session.currentUser.intro_myself}"/><br>        
             <s:submit value="更新"/>
         </s:form>
+        <h2>画像アップロード</h2>            
+        <form enctype="multipart/form-data" method="post" action="upload02">
+            <p><s:actionmessage/></p>
+            <p><input type="file" name="docment" value="参照 ..." /></p>
+            <p><input type="submit" value="アップロード"/></p>
+        </form>
         <s:form action="cancel_profile">
             <s:submit value="キャンセル"/>
         </s:form>

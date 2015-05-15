@@ -13,9 +13,10 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <s:form action="commit_comment">
-            <s:label label="タイトル：" value="XXXXX" name="title"/><br><br>
-            <s:label label="ユーザ名："/><s:textfield name="userName" id="userName"/><br><br>
+        <h1>コメント追加画面</h1>
+        <s:form action="addComment">
+            <h4>タイトル：<s:property value="post_title"/></h4>
+            <s:label value="ユーザ名："/><s:textfield name="userName" id="userName" value="%{#session.currentUser.username}"/><br><br>
             <s:label value="コメント"/><br>
             <s:textarea rows="20" name="comment"/><br>
             <s:submit value="登録" id="insert" align="center"/>

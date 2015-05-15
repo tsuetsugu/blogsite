@@ -24,10 +24,11 @@
     
         <br>    
             
-        <s:iterator value="items">
-            <s:property value="id"/>
-            <s:property value="name"/><br>
-     
+        <s:iterator value="users">
+            <tr>
+                <td><s:property value="id"/></td>
+                <td><s:property value="username"/></td>
+            </tr>
         </s:iterator>
 
         

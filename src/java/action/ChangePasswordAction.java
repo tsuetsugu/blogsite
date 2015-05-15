@@ -121,8 +121,8 @@ public class ChangePasswordAction extends AbstractDBAction{
 				return null;
 			}
 			User user = new User();
-			user.setId(rs.getString("user_id"));
-			user.setUserName(rs.getString("username"));
+			user.setId(rs.getLong("user_id"));
+			user.setUsername(rs.getString("username"));
 
 			return user;
 		} catch (SQLException e) {
@@ -145,7 +145,8 @@ public class ChangePasswordAction extends AbstractDBAction{
                         PreparedStatement stmt = getConnection().prepareStatement(sql);
 			// SQL実行
                         stmt.setString(1, password);
-                        stmt.setString(2, user.getId());
+                        stmt.setLong(2, user.getId());
+
                         int rs = stmt.executeUpdate(); 
 
 			return rs;

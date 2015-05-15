@@ -13,57 +13,93 @@ package model;
  * ユーザ情報を保持します。
  */
 public class User {
-	
-	/**
-	 * IDを保持します。
-	 */
-	private String _id;
-	
-	/**
-	 * ユーザ名を保持します。
-	 */
-	private String _username;
 
-	
-	
-	/**
-	 * 構築します。
-	 */
-	public User() {
-		_id = null;
-		_username = null;
-	}
-	
-	/**
-	 * IDを取得します。
-	 * @return
-	 */
-	public String getId() {
-		return _id;
-	}
-	
-	/**
-	 * IDを設定します。
-	 * @param id
-	 */
-	public void setId(String id) {
-		_id = id;
-	}
-	
-	/**
-	 * 名前を取得します。
-	 * @return
-	 */
-	public String getUserName() {
-		return _username;
-	}
-	
-	/**
-	 * 名前を設定します。
-	 * @param userName
-	 */
-	public void setUserName(String userName) {
-		_username = userName;
-	}
-	
+    /**
+     * IDを保持します。
+     */
+    private long _id;
+
+    /**
+     * ユーザ名を保持します。
+     */
+    private String _username;
+
+    /**
+     * 都道府県コードを保持
+     */
+    private String _todo_code;
+
+    /**
+     * 出身地名を保持
+     */
+    private String _home;
+    
+    /**
+     * 自己紹介を保持
+     */
+    private String _intro_myself;
+
+    /**
+     * 構築します。
+     */
+    public User() {
+        _id = 0;
+        _username = null;
+        _todo_code = null;
+        _intro_myself = null;
+    }
+
+    /**
+     * IDを取得します。
+     *
+     * @return
+     */
+    public long getId() {
+        return _id;
+    }
+
+    /**
+     * IDを設定します。
+     *
+     * @param id
+     */
+    public void setId(long id) {
+        _id = id;
+    }
+
+    public String getUsername() {
+        return _username;
+    }
+
+    public void setUsername(String _username) {
+        this._username = _username;
+    }
+
+    
+    public String getTodo_code() {
+        return _todo_code;
+    }
+
+    public void setTodo_code(String _todo_code) {
+        this._todo_code = _todo_code;
+    }
+
+    public String getIntro_myself() {
+        return _intro_myself;
+    }
+
+    public void setIntro_myself(String _intro_myself) {
+        this._intro_myself = _intro_myself;
+    }
+
+    public String getHome() {
+        return _home;
+    }
+
+    public void setHome(String _home) {
+        this._home = _home;
+    }
+
+    
+    
 }

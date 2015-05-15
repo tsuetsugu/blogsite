@@ -1,50 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
 <struts>
-  <constant name="struts.devMode" value="true" />
-  <package name="test" extends="struts-default">
- 
-  <action name="myPage">
-    <result>/login.jsp</result>
-  </action>
-  <action name="search_use" class="action.IndexAction" method="show">
-    <result name="success">/index.jsp</result>
-  </action>
-  <action name="changed_pass">
-    <result name="success">/chPass.jsp</result>
-  </action>
-  <action name="write_article">
-    <result>/articleEdit.jsp</result>
-  </action>
-    <action name="edit_article">
-    <result>/articleEdit.jsp</result>
-  </action>
-  <action name="edit_profile">
-    <result>/profile.jsp</result>
-  </action>
-  <action name="write_comment">
-    <result>/comment.jsp</result>
-  </action>
-  <action name="logout">
-    <result>/login.jsp</result>
-  </action>    
-   <action name="cancel_profile">
-    <result>/myPage.jsp</result>
-  </action>
-  <action name="commit_profile">
-    <result>/myPage.jsp</result>
-  </action> 
-  <action name="cancel_article">
-    <result>/myPage.jsp</result>
-  </action>
-  <action name="commit_article">
-    <result>/myPage.jsp</result>
-  </action>
-  <action name="cancel_comment">
-    <result>/myPage.jsp</result>
-  </action>
-  <action name="commit_comment">
-    <result>/myPage.jsp</result>
-  </action>   
-  </package>
+    <constant name="struts.devMode" value="true" />
+    <package name="test" extends="struts-default">
+        <!-- 初期画面  --> 
+        <action name="myPage">
+            <result>/login.jsp</result>
+        </action>
+        <action name="search_use" class="action.IndexAction" method="show">
+            <result name="success">/index.jsp</result>
+        </action>
+        <!-- ログイン画面 -->        
+        <action name="changed_pass">
+            <result name="success">/chPass.jsp</result>
+        </action>
+        <!-- パスワード変更画面  -->         
+        <action name="cance_chpass">
+            <result name="success">/chPass.jsp</result>
+        </action>
+        <!-- Myページ画面  -->                 
+        <action name="write_article" class="action.ArticleEditAction" method="doInit">
+            <result>/articleEdit.jsp</result>
+        </action>
+        <!--
+        <action name="edit_article" class="action.ArticleEditAction" method="doInit">
+            <result>/articleEdit.jsp</result>
+        </action>
+        -->
+        <action name="edit_profile" class="action.ProfileAction" method="show">
+            <result name="success">/profile.jsp</result>
+        </action>
+        <action name="write_comment" class="action.CommentAction" method="doInit">
+            <result>/comment.jsp</result>
+        </action>
+        <action name="logout">
+            <result>/login.jsp</result>
+        </action>
+        <!-- プロフィール編集画面  -->         
+        <!-- アップロード用  -->
+        <!-- http://localhost:8080/Struts2Tutorial/upload02  -->
+        <action name="upload02" class="action.FileUploadSampleAction" method="upload">
+            <result name="input">/profile.jsp</result>
+            <result>/profile.jsp</result>
+        </action>           
+        <action name="cancel_profile">
+            <result>/myPage.jsp</result>
+        </action>
+        <action name="commit_profile">
+            <result>/myPage.jsp</result>
+        </action>
+        <!-- 記事登録編集画面  -->          
+        <action name="cancel_article">
+            <result>/myPage.jsp</result>
+        </action>
+        <!-- コメント登録画面  -->         
+        <action name="cancel_comment">
+            <result>/myPage.jsp</result>
+        </action>
+    </package>
 </struts>

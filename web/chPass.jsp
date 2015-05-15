@@ -12,7 +12,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
    
-
     </head>
     <body>
 
@@ -23,7 +22,7 @@
             <s:label value="新規パスワード："/><s:password name="password" value="" size="24" id="password"/><br/><br/>
             <s:submit value="変更" />
         </s:form>
-        <s:form action="cancel">
+        <s:form action="cance_chpass">
             <s:submit value="キャンセル"/>
         </s:form>    
  
