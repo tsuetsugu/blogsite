@@ -22,7 +22,9 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.opensymphony.xwork2.ActionSupport;
 import java.util.ArrayList;
 import model.Article;
+import model.ArticleCategory;
 import model.Comment;
+import model.Image;
 import model.MasterCode;
 import model.User;
 
@@ -83,7 +85,7 @@ public abstract class AbstractDBAction extends ActionSupport
     }
 
     /**
-     * 現在のユーザを取得します。
+     * 現在のログインユーザを取得します。
      *
      * @return
      */
@@ -92,7 +94,7 @@ public abstract class AbstractDBAction extends ActionSupport
     }
 
     /**
-     * 現在のユーザを設定します。
+     * 現在のログインユーザを設定します。
      *
      * @param user
      */
@@ -100,6 +102,24 @@ public abstract class AbstractDBAction extends ActionSupport
         _session.put(SESSION_CURRENT_USER, user);
     }
 
+    /**
+     * 表示しているユーザを取得します。
+     *
+     * @return
+     */
+    public User getShowUser() {
+        return (User) _session.get("showuser");
+    }
+
+    /**
+     * 表示しているユーザを設定します。
+     *
+     * @param user
+     */
+    protected void setShowtUser(User user) {
+        _session.put("showuser", user);
+    }    
+    
     /**
      * エラーを表示します。
      *
@@ -152,25 +172,66 @@ public abstract class AbstractDBAction extends ActionSupport
         return (ArrayList<Article>) _session.get("currentArticles");
     }       
     
-        /**
-     * コメントを設定します。
+    /**
+     * 記事(カテゴリ毎)を設定します。
      *
      * @param code_id
      * @param mscds
      *
      */
-    protected void setComments(ArrayList<Comment> comments) {
+    protected void setSCatArticles(ArrayList<Article> articles) {
+        _session.put("catArticles", articles);
+    }
+
+    /**
+     * 記事(カテゴリ毎)を取得します。
+     *
+     * @return
+     */
+    public ArrayList<Article> getSCatArticles() {
+        return (ArrayList<Article>) _session.get("catArticles");
+    }    
+    
+     /**
+     * 表示コメントを設定します。
+     *
+     * @param code_id
+     * @param mscds
+     *
+     */
+    protected void setShowComments(ArrayList<Comment> comments) {
         _session.put("currentComments", comments);
     }
 
     /**
-     * コメントを取得します。
+     * 表示コメントを取得します。
      *
      * @return
      */
-    public ArrayList<Comment> getComments() {
+    public ArrayList<Comment> getShowComments() {
         return (ArrayList<Comment>) _session.get("currentComments");
     }  
+
+    /**
+     * 取得したコメントを設定します。
+     *
+     * @param code_id
+     * @param mscds
+     *
+     */
+    protected void setAllComments(ArrayList<Comment> comments) {
+        _session.put("allComments", comments);
+    }
+
+    /**
+     * 取得したコメントを取得します。
+     *
+     * @return
+     */
+    public ArrayList<Comment> getAllComments() {
+        return (ArrayList<Comment>) _session.get("allComments");
+    }    
+    
     
     /**
      * 記事(を設定します。
@@ -193,9 +254,8 @@ public abstract class AbstractDBAction extends ActionSupport
     }  
     
     
-    
     /**
-     * 記事IDを設定します。
+     *  記事IDを設定します。
      *
      * @param code_id
      * @param mscds
@@ -213,6 +273,181 @@ public abstract class AbstractDBAction extends ActionSupport
     public long getPostId() {
         return (long) _session.get("currentPostid");
     }  
+ 
+/**
+     * カテゴリごとの記事件数一覧
+     *
+     * @param code_id
+     * @param mscds
+     *
+     */
+  protected void setArtCats(ArrayList<ArticleCategory> artCats) {
+        _session.put("artCategorys", artCats);
+    }
+
+    /**
+     * カテゴリごとの記事件数一覧
+     *
+     * @return
+     */
+    public ArrayList<ArticleCategory> getArtCats() {
+        return (ArrayList<ArticleCategory>) _session.get("artCategorys");
+    }    
+    
+    /**
+     * 特定セッションの削除
+     * @param key 
+     */
+    
+    public void delSession(String key){
+        _session.remove(key);
+    }
+
+    /**
+     * 現在の自分プロフィール画像
+     *
+     * @param image
+     *
+     */
+  protected void setCurrentmyImage(Image image) {
+        _session.put("currentprofileimage", image);
+    }
+    
+    
+    /**
+     * 現在の自分プロフィール画像
+     *
+     * @return
+     */
+    protected Image getCurrentmyImage() {
+        return (Image) _session.get("currentprofileimage");
+    }    
+
+    /**
+     * 現在のユーザプロフィール画像
+     *
+     * @param image
+     *
+     */
+  protected void setCurrentuserImage(Image image) {
+        _session.put("currentuserprofileimage", image);
+    }
+    
+    
+    /**
+     * 現在のユーザプロフィール画像
+     *
+     * @return
+     */
+    protected Image getCurrentuserImage() {
+        return (Image) _session.get("currentuserprofileimage");
+    }    
+    
+        /**
+     * アップロードのプロフィール画像
+     *
+     * @param image
+     *
+     */
+  protected void setUploadImage(Image image) {
+        _session.put("uploadprofileimage", image);
+    }
+    
+    
+    /**
+     * アップロードのプロフィール画像
+     *
+     * @return
+     */
+    public Image getUploadImage() {
+        return (Image) _session.get("uploadprofileimage");
+    } 
+
+    public int getComentcnt(){
+        return (int) _session.get("commentcnt");
+    }
+
+    public void setCommentcnt(int cnt){
+        _session.put("commentcnt", cnt);
+    }    
+    
+    public int getComBackIndex(){
+        return (int) _session.get("backindex");
+    }
+
+    public void setComBackIndex(int index){
+        _session.put("backindex", index);
+    }
+    
+    
+    public int getComNextIndex(){
+        return (int) _session.get("nextindex");
+    }
+
+    public void setComNextIndex(int index){
+        _session.put("nextindex", index);
+    }    
+    
+    /**
+     * コメント次へ表示のためのフラグ
+     * @return 
+     */
+    
+    public int getNextflg(){
+        return (int) _session.get("nextflg");
+    }
+
+    public void setNextflg(int flg){
+        _session.put("nextflg", flg);
+    }    
+
+     /**
+     * コメント前へ表示のためのフラグ
+     * @return 
+     */
+    
+    public int getBackflg(){
+        return (int) _session.get("backflg");
+    }
+
+    public void setBackflg(int flg){
+        _session.put("backflg", flg);
+    }  
+
+     /**
+     * カレンダーの記事リスト
+     * @return 
+     */
+    
+    public ArrayList<Article> getCalArticles(){
+        return (ArrayList<Article>) _session.get("calarticles");
+    }
+
+    public void setCalArticles(ArrayList<Article> calart){
+        _session.put("calarticles", calart);
+    }     
+
+     /**
+     * カレンダーの記事リスト
+     * @return 
+     */
+    
+    public Map<String,String> getCalMap(){
+        return (Map<String,String>) _session.get("calmap");
+    }
+
+    public void setCalMap(Map<String,String> calmap){
+        _session.put("calmap", calmap);
+    }    
+    
+    /**
+     * セッションクリア
+     *
+     * @return
+     */
+    public void delSession() {
+        _session.clear();
+    }      
     
     
     /**

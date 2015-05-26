@@ -6,6 +6,8 @@
 package action;
 
 import static action.PropertiesWithUtf8.loadUtf8Properties;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -144,7 +146,7 @@ public class ChangePasswordAction extends AbstractDBAction{
                     
                         PreparedStatement stmt = getConnection().prepareStatement(sql);
 			// SQL実行
-                        stmt.setString(1, password);
+                        stmt.setString(1, getSha256(password));
                         stmt.setLong(2, user.getId());
 
                         int rs = stmt.executeUpdate(); 
@@ -158,5 +160,27 @@ public class ChangePasswordAction extends AbstractDBAction{
 				statement = null;
 			}
 		}
-	}      
+	}
+    
+    
+    
+public static String getSha256(String target) {
+        MessageDigest md = null;
+        StringBuffer buf = new StringBuffer();
+        try {
+          md = MessageDigest.getInstance("SHA-256");
+          md.update(target.getBytes());
+          byte[] digest = md.digest();
+
+          for (int i = 0; i < digest.length; i++) {
+            buf.append(String.format("%02x", digest[i]));
+          }
+
+        } catch (NoSuchAlgorithmException e) {
+          e.printStackTrace();
+        }
+
+        return buf.toString();
+    }    
+    
 }

@@ -5,6 +5,7 @@
  */
 package action;
 
+import static action.PropertiesWithUtf8.loadUtf8Properties;
 import com.opensymphony.xwork2.ActionSupport;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 import model.User;
 import org.apache.log4j.Logger;
 
@@ -29,7 +31,15 @@ public class IndexAction extends AbstractDBAction {
     public String show() throws Exception {
         
         //ユーザ一覧取得
-        getUser();        
+        getUser();
+        
+        if(users.isEmpty()){
+            //メッセージプロパティ取得
+        Properties prop = loadUtf8Properties("/message.properties");
+            addActionError(prop.getProperty("index.notexist"));
+            return SUCCESS;
+        }
+        
         setUsers(users);
         return SUCCESS;
     }
@@ -53,28 +63,43 @@ public class IndexAction extends AbstractDBAction {
     
     private void getUser() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
-            // ログインSQL
-            String sql = "SELECT user_id, username FROM users WHERE username LIKE ?";
+            
+            
+            
+            String sql = "";
+            String searchStr = "%" + search + "%";  
             
             Connection con = getConnection();
             
-            //ワイルドカード
-            String searchStr = "%" + search + "%";
-            
-            PreparedStatement stmt = con.prepareStatement(sql);
+            PreparedStatement stmt = null;
+             
+            if(search.isEmpty()){
+                sql = "SELECT user_id, username FROM users";
+                stmt = con.prepareStatement(sql);
+            }else{
+                // ユーザ検索SQL
+                sql = "SELECT user_id, username FROM users WHERE username LIKE ?";
+                stmt = con.prepareStatement(sql);
+                //ワイルドカード
+                searchStr = "%" + search + "%";   
+                stmt.setString(1, searchStr);
+            }
+
             // SQL実行
-            stmt.setString(1, searchStr);
             ResultSet rs = stmt.executeQuery();
             
-            User user = new User();
-            
             while(rs.next()){
+                
+                logger.error("ループ入った");
+                User user = new User();
+
                 user.setId(rs.getLong("user_id"));
                 user.setUsername(rs.getString("username"));
                 
                 users.add(user);
             }
-
+           
+            
             stmt.close();
             con.close();
          } catch (Exception e) {

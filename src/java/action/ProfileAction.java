@@ -5,6 +5,8 @@
  */
 package action;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +15,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import model.Image;
 import model.MasterCode;
 import model.User;
 import org.apache.log4j.Logger;
@@ -26,7 +29,6 @@ import org.apache.struts2.convention.annotation.Results;
  * @author lepra25-pc
  */
 @Results({
-    @Result(name = "cancel_profile", location = "/myPage.jsp"),
     @Result(name = "commit_profile", location = "/myPage.jsp"),
     @Result(name = "success", location = "/profile.jsp")
 })
@@ -69,6 +71,9 @@ public class ProfileAction extends AbstractDBAction {
         //mscds = getMasterCode("tdfcode");
         //セッションがない場合のみ実行
         //if(mscds.isEmpty()){
+        
+        setUploadImage(getCurrentmyImage());
+        
         setMscds(this.mscds);
         setMasterCode("tdfcode", mscds);
         //}
@@ -87,7 +92,7 @@ public class ProfileAction extends AbstractDBAction {
 
         //現在のユーザ取得
         User user = getCurrentUser();
-
+        
         //更新処理
         int result = updateProfile(user);
 
@@ -112,7 +117,16 @@ public class ProfileAction extends AbstractDBAction {
                     break;
                 }
             }
-
+            
+            Image img = new Image();
+            img.setFile(getUploadImage().getFile());
+            img.setFilename(getUploadImage().getFilename());
+            img.setFilepath(getUploadImage().getFilepath());
+            img.setImagesize(getUploadImage().getImagesize());
+            img.setUser_img(getUploadImage().getUser_img());
+            
+            setCurrentmyImage(img);
+            
             setCurrentUser(user);
         }
 
@@ -125,8 +139,8 @@ public class ProfileAction extends AbstractDBAction {
      * @return
      * @throws Exception
      */
-    @Action("/cancel")
-    public String cancel() throws Exception {
+    public String cancelporofile() throws Exception {
+        delSession("uploadprofileimage");
         return "cancel_profile";
     }
 
@@ -177,21 +191,30 @@ public class ProfileAction extends AbstractDBAction {
         }
     }
 
-    private int updateProfile(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private int updateProfile(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException,IOException{
         Statement statement = null;
         try {
             // ユーザ情報更新
-            String sql = "UPDATE users SET username=?,todo_code=?, intro_myself=?, update_date=? WHERE user_id=?";
+            String sql = "UPDATE users SET username=?,todo_code=?, user_img=?,img_len=?,img_name=?,intro_myself=?, update_date=? WHERE user_id=?";
 
             PreparedStatement stmt = getConnection().prepareStatement(sql);
+            
+        //セッションから画像ファイル情報取得
+            Image img = new Image();
+            img = getUploadImage();
+            
+            
             // SQL実行
             stmt.setString(1, username);
             stmt.setString(2, home);
-            stmt.setString(3, myself);
+            stmt.setBinaryStream(3,new FileInputStream(img.getFile()),img.getImagesize());
+            stmt.setInt(4,img.getImagesize());
+            stmt.setString(5,img.getFilename());
+            stmt.setString(6, myself);
             Date today = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            stmt.setString(4, sdf.format(today));
-            stmt.setLong(5, user.getId());
+            stmt.setString(7, sdf.format(today));
+            stmt.setLong(8, user.getId());
 
             int rs = stmt.executeUpdate();
 

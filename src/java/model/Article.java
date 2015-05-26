@@ -5,13 +5,14 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author lepra25-pc
  */
-public class Article {
+public class Article{
     
     private long post_id;
     private long user_id;

@@ -10,6 +10,11 @@
         <action name="search_use" class="action.IndexAction" method="show">
             <result name="success">/index.jsp</result>
         </action>
+        
+        <!-- ユーザページへの遷移 -->
+        <action name="move_userpage" class="action.UserPageAction" method="show">
+            <result name="success">/userPage.jsp</result>
+        </action>
         <!-- ログイン画面 -->        
         <action name="changed_pass">
             <result name="success">/chPass.jsp</result>
@@ -18,33 +23,74 @@
         <action name="cance_chpass">
             <result name="success">/chPass.jsp</result>
         </action>
-        <!-- Myページ画面  -->                 
+        <!-- Myページ画面  -->
+        <!-- 新規記事登録 -->             
         <action name="write_article" class="action.ArticleEditAction" method="doInit">
             <result>/articleEdit.jsp</result>
         </action>
+        <!-- カテゴリのリンク押下 --> 
+        <action name="cat_article" class="action.MypageAction" method="getCatArticles">
+            <result name="success">/myPage.jsp</result>
+        </action>
+        <action name="select_article" class="action.MypageAction" method="selectCatArticle">
+            <result name="success">/myPage.jsp</result>
+        </action>        
         <!--
         <action name="edit_article" class="action.ArticleEditAction" method="doInit">
             <result>/articleEdit.jsp</result>
         </action>
-        -->
+        -->       
+
+        <!-- プロフィール編集 -->
         <action name="edit_profile" class="action.ProfileAction" method="show">
             <result name="success">/profile.jsp</result>
         </action>
-        <action name="write_comment" class="action.CommentAction" method="doInit">
-            <result>/comment.jsp</result>
+        <!-- コメント追加 -->
+        <action name="write_comment" method="doInit" class="action.CommentAction" >
+            <result name="comment">/comment.jsp</result>
         </action>
+         <!-- コメント次へボタン -->
+        <action name="mynext" class="action.MypageAction" method="next">
+          <result name="mypage">/myPage.jsp</result>
+        </action>
+        <!-- コメント前へボタン -->
+        <action name="myback" class="action.MypageAction" method="back">
+          <result name="mypage">/myPage.jsp</result>
+        </action>
+        <!-- ログアウト -->           
         <action name="logout">
             <result>/login.jsp</result>
         </action>
+        
+        <!-- ユーザページ -->
+        <!-- 初期画面遷移 -->
+        <action name="mv_index" class="action.UserPageAction" method="moveindex">
+            <result name="success">/index.jsp</result>
+        </action>         
+        <!-- カテゴリのリンク押下 --> 
+        <action name="use_cat_article" class="action.UserPageAction" method="getCatArticles">
+            <result name="success">/userPage.jsp</result>
+        </action>                
+        <!-- コメント追加 -->
+        <action name="user_comment" method="userAddComment" class="action.CommentAction" >
+            <result name="comment">/comment.jsp</result>
+        </action>
+         <!-- コメント次へボタン -->
+        <action name="usernext" class="action.UserPageAction" method="next">
+          <result name="userpage">/userPage.jsp</result>
+        </action>
+        <!-- コメント前へボタン -->
+        <action name="userback" class="action.UserPageAction" method="back">
+          <result name="userpage">/userPage.jsp</result>
+        </action> 
         <!-- プロフィール編集画面  -->         
-        <!-- アップロード用  -->
-        <!-- http://localhost:8080/Struts2Tutorial/upload02  -->
-        <action name="upload02" class="action.FileUploadSampleAction" method="upload">
-            <result name="input">/profile.jsp</result>
-            <result>/profile.jsp</result>
-        </action>           
-        <action name="cancel_profile">
-            <result>/myPage.jsp</result>
+ 
+        <action name="doUpload" class="action.UploadAction">    
+            <result name="success">/profile.jsp</result>
+        </action>
+                      
+        <action name="cancel_profile" class="action.ProfileAction" method="cancelporofile">
+            <result name="cancel_profile">/myPage.jsp</result>
         </action>
         <action name="commit_profile">
             <result>/myPage.jsp</result>
@@ -53,9 +99,11 @@
         <action name="cancel_article">
             <result>/myPage.jsp</result>
         </action>
-        <!-- コメント登録画面  -->         
-        <action name="cancel_comment">
-            <result>/myPage.jsp</result>
-        </action>
+        <!-- コメント登録画面  -->
+           
+        <action name="cancel_comment" method="cancel" class="action.CommentAction">
+            <result name="cancel_comment">/myPage.jsp</result>
+            <result name="user_cancel_comment">/userPage.jsp</result>
+        </action>    
     </package>
 </struts>

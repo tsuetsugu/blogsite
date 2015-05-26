@@ -1,0 +1,91 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2015/05/22, 9:45:51
+    Author     : lepra25-pc
+*/
+
+
+body {
+    text-align:center;
+}
+#header {
+    width:100%;
+    height:100px;
+    
+    //border: thin solid #336600;
+    //background-color: #FFFFFF;
+    text-align:left;
+    margin-bottom:5px;
+}
+
+#logout{
+    text-align: right;
+}
+
+
+#container {
+    width:960px;
+    border: thin solid #336600;
+    background-color: #F2FFEE;
+    text-align:left;
+    padding:5px;
+}
+#sidebar01 {
+    width:155px;
+    border: thin solid #336600;
+    float:left;
+    background-color: #FFFFFF;
+    text-align:left;
+    //height:300px;
+    margin-right:5px;
+}
+#content {
+    width:600px;
+    border: thin solid #336600;
+    float:left;
+    background-color: #FFFFFF;
+    text-align:left;
+    
+}
+#sidebar02 {
+    width:180px;
+    border: thin solid #336600;
+    float:right;
+    background-color: #FFFFFF;
+    text-align:left;
+}
+#footer {
+    width:100%;
+    height:30px;
+    clear:both;
+    background-color: #F2FFEE;
+    text-align:right;
+    margin-top:5px;
+}
+
+#form{
+    background-color: #F2FFEE;
+    width: 400px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 1px solid #555;
+    }
+
+.form-title{
+    text-align: center;
+    }
+
+input[type="loginid"],
+input[type="password"] {
+    width: 300px;
+    padding: 4px;
+    font-size: 14px;
+    }
+    
+.submit{
+    text-align: right;
+    }
