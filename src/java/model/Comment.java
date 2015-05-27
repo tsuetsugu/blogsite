@@ -5,13 +5,18 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author lepra25-pc
  */
-public class Comment {
+public class Comment implements Serializable {
+
+    // Serial Version UID を付ける
+    private static final long serialVersionUID = 1L;
+    
     private long comment_id;
     private long post_id;
     private String username;

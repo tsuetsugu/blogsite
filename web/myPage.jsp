@@ -52,6 +52,8 @@
                     <s:if test="#artst.first">
                         <s:form action="editArticle">                   
                             <h4>タイトル：<s:property value="%{#art.post_title}"/></h4>
+                            <p class="date"><s:property value="%{#art.post_date}"/></p>
+       
                             <s:hidden name="post_id" value="%{#art.post_id}"/><br>
                             <s:property value="%{#art.post}"/><br><br>
                             <s:submit value="記事編集"/>
@@ -102,7 +104,7 @@
                     <s:submit value="編集"/><br><br>
 
                     <s:label value="名前："/><s:property value="#session.currentUser.username"/><br><br>
-                    <img src="<s:property value = "%{#session.currentprofileimage.filepath}"/>" width="175" height="100" /><br><br>
+                    <img src="<s:property value = "%{#session.currentprofileimage.filepath}"/>" width="175" height="100" alt="No Image" /><br><br>
                     <s:label value="出身："/><s:property value="#session.currentUser.home"/><br><br>
                     <s:label value="自己紹介"/><br><br><s:property value="#session.currentUser.intro_myself"/><br>
 

@@ -8,6 +8,7 @@ package action;
 import static action.PropertiesWithUtf8.loadUtf8Properties;
 import static action.SubmitAction.getSha256;
 import static com.opensymphony.xwork2.Action.SUCCESS;
+import static constants.Constant.BODER;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,8 +18,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import javax.servlet.http.HttpServletRequest;
 import model.Article;
 import model.ArticleCategory;
 import model.Comment;
@@ -36,11 +41,17 @@ public class UserPageAction extends AbstractDBAction {
 
     private String id;
     private String code;
+    private long post_id;
     private int index;
     private ArrayList<MasterCode> mscds = new ArrayList<>();
     private ArrayList<MasterCode> categrys = new ArrayList<>();
     private ArrayList<ArticleCategory> artcs = new ArrayList<>();
+    private ArrayList<Article> articles = new ArrayList<>();
+    private ArrayList<Article> calarticles = new ArrayList<>();
     private Image img = new Image();
+    private ArrayList<Comment> comments = new ArrayList<>();
+    private ArrayList<Comment> outcomments = new ArrayList<>();
+    private Map<String, String> calMap = new HashMap<>();
 
     /**
      * Logger.
@@ -63,7 +74,14 @@ public class UserPageAction extends AbstractDBAction {
         this.code = code;
     }
 
-    
+    public long getPost_id() {
+        return post_id;
+    }
+
+    public void setPost_id(long post_id) {
+        this.post_id = post_id;
+    }
+
     public ArrayList<MasterCode> getMscds() {
         return mscds;
     }
@@ -81,14 +99,13 @@ public class UserPageAction extends AbstractDBAction {
         this.index = index;
     }
 
-    
     // ユーザを検索して一覧を取得
     public String show() throws Exception {
 
         //都道府県マスタ取得
         setMscds(this.mscds);
         setMasterCode("tdfcode", mscds);
-        
+
         //カテゴリを取得
         getCategrys();
 
@@ -100,6 +117,15 @@ public class UserPageAction extends AbstractDBAction {
         User user = new User();
 
         user = getUser();
+
+        //出身地名を設定
+        for (MasterCode mscd : mscds) {
+            if (mscd.getCode().equals(user.getTodo_code())) {
+                user.setHome(mscd.getCode_name());
+                break;
+            }
+        }
+
         //カテゴリに該当する記事の件数を取得
         getArticleCategrys(user);
         //カテゴリ一覧を設定
@@ -110,18 +136,18 @@ public class UserPageAction extends AbstractDBAction {
 
         //最新の記事取得
         articles = getArticles(user);
-        
-        
+
         //コメント取得
         for (Article art : articles) {
-           getComments(art,comments);
-           logger.error(comments.size());
+            getComments(art, comments);
         }
-        
 
         //記事とコメントを設定
         setArticles(articles);
         setAllComments(comments);
+
+        //カレンダーリンク用データ作成
+        createCaldata();
 
         //次へボタンはデフォルト非表示
         setNextflg(0);
@@ -135,26 +161,25 @@ public class UserPageAction extends AbstractDBAction {
 
             count = comments.indexOf(com);
 
-            //次の表示(5件)を超えた場合
-            if (count == 5) {
+            //次の表示を超えた場合
+            if (count == BODER) {
                 //次へボタン表示
                 setNextflg(1);
                 setComNextIndex(count);
                 break;
             }
 
-            if (count <= 5) {
+            if (count <= BODER) {
                 outcomments.add(com);
             }
         }
 
         //表示用のコメントをセッションに格納
-        setShowComments(outcomments);        
-        
+        setShowComments(outcomments);
+
         return SUCCESS;
     }
 
-    
     /**
      * コメント次へボタン処理
      *
@@ -163,7 +188,7 @@ public class UserPageAction extends AbstractDBAction {
     public String next() {
 
         ArrayList<Comment> comments = new ArrayList<>();
-        ArrayList<Comment> outcomments = new ArrayList<>();        
+        ArrayList<Comment> outcomments = new ArrayList<>();
         //全体のコメントリスト取得
         comments = getAllComments();
 
@@ -174,26 +199,29 @@ public class UserPageAction extends AbstractDBAction {
         int count = 0;
 
         //次のIndex取得
-        int backIndex = ((index / 5) - 1) * 5;
-        int nextIndex = ((index / 5)) * 5;
+        int backIndex = ((index / BODER) - 1) * BODER;
+        int currentIndex = index;
 
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示を超えた場合
-            if (count == nextIndex + 5) {
-                setNextflg(1);
-                break;
+                //次の表示を超えた場合
+                if (count > currentIndex + BODER) {
+                    setNextflg(1);
+                    break;
+                }
+
+                if (count > currentIndex) {
+                    outcomments.add(com);
+                }
             }
 
-            if (count >= nextIndex) {
-                outcomments.add(com);
-            }
         }
 
         //INDEXをセッションに保持
-        setComNextIndex(count);
+        setComNextIndex(count - 1);
         setComBackIndex(backIndex);
 
         //表示用のコメントに設定
@@ -208,10 +236,9 @@ public class UserPageAction extends AbstractDBAction {
      * @return
      */
     public String back() {
-        
-        ArrayList<Comment> comments = new ArrayList<>();
-        ArrayList<Comment> outcomments = new ArrayList<>();  
 
+        ArrayList<Comment> comments = new ArrayList<>();
+        ArrayList<Comment> outcomments = new ArrayList<>();
 
         //全体のコメントリスト取得
         comments = getAllComments();
@@ -228,88 +255,153 @@ public class UserPageAction extends AbstractDBAction {
 
         //最初の表示でなければ前へのボタンを表示
         if (firstIndex != 0) {
-            backIndex = ((index / 5) - 1) * 5;
+            backIndex = ((index / BODER) - 1) * BODER;
             setBackflg(1);
         }
 
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示を超えた場合
-            if (count == firstIndex + 5) {
-                setNextflg(1);
-                break;
-            }
+                //次の表示を超えた場合
+                if (count > firstIndex + BODER) {
+                    setNextflg(1);
+                    break;
+                }
 
-            if (count >= firstIndex) {
-                outcomments.add(com);
+                if (count > firstIndex) {
+                    outcomments.add(com);
+                }
             }
         }
         //INDEXをセッションに保持
-        setComNextIndex(count);
+        setComNextIndex(count - 1);
         setComBackIndex(backIndex);
         //表示用のコメントに設定
         setShowComments(outcomments);
 
         return "userpage";
-    }    
-    
+    }
+
     /**
      * 初期表示画面移動
-     * @return 
+     *
+     * @return
      */
-    public String moveindex(){
-        
-        logger.error("move_index");
-        
+    public String moveindex() {
+
         //テンポラリ削除
         DeleteFile del = new DeleteFile();
-        
-        File file = new File(getCurrentuserImage().getFilefullpath());
-        
-        del.delFile(file);    
-        
+        if (getCurrentmyImage() != null) {
+
+            if (getCurrentmyImage().getFilefullpath() != null) {
+
+                File file = new File(getCurrentmyImage().getFilefullpath());
+                del.delFile(file);
+            }
+        } else if (getUploadImage() != null) {
+            if (getUploadImage().getFilefullpath() != null) {
+                File file = new File(getUploadImage().getFilefullpath());
+
+                del.delFile(file);
+            }
+        }
+
         delSession();
-        
+
         return "success";
     }
-    
+
     /**
-     * カテゴリごとの記事一覧取得
-     * @return 
+     * 押下されたカテゴリの記事一覧表示
+     *
+     * @return
      */
-    public String getCatArticles() throws Exception{
-        ArrayList<Article> articles = new ArrayList<>();
-        ArrayList<Comment> comments = new ArrayList<>();
-        ArrayList<Comment> outcomments = new ArrayList<>();
-        
+    public String showCatArticles() throws Exception {
+
+        articles.clear();
         User user = new User();
         user = getShowUser();
-        
+
         //記事取得
-        articles = getArticles(user,code);
-        
-        //記事をセッションに設定
-        setArticles(articles);
-        
-        for (Article article : articles){
-            //コメントのリスト作成
-            comments = getComments(article);
-        }
-        
+        articles = getArticles(user, code);
+
+        //カテゴリ毎の記事をセッションに設定
+        setSCatArticles(articles);
+
         return "success";
-    }    
-    
+    }
+
+    /**
+     * カテゴリ記事一覧で押下された記事表示
+     *
+     * @return
+     */
+    public String showCatArticle() throws Exception {
+
+        articles.clear();
+        comments.clear();
+        outcomments.clear();
+
+        ArrayList<Article> showArts = new ArrayList<>();
+
+        //記事取得
+        articles = getSCatArticles();
+
+        for (Article article : articles) {
+
+            if (article.getPost_id() == post_id) {
+
+                showArts.add(article);
+                //コメントのリスト作成
+                getComments(article);
+            }
+        }
+
+        //現在の記事としてセッションに設定
+        setArticles(showArts);
+
+        //次へボタンはデフォルト非表示
+        setNextflg(0);
+        setBackflg(0);
+        setComNextIndex(0);
+        setComBackIndex(0);
+        int count = 0;
+        for (Comment com : comments) {
+
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
+
+                //次の表示を超えた場合
+                if (count > BODER) {
+                    //次へボタン表示
+                    setNextflg(1);
+                    setComNextIndex(count - 1);
+                    break;
+                }
+
+                if (count <= BODER) {
+                    outcomments.add(com);
+                }
+            }
+
+        }
+
+        //表示用のコメントをセッションに格納
+        setShowComments(outcomments);
+
+        return "success";
+    }
+
     /**
      * 都道府県コード取得
+     *
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws InstantiationException
-     * @throws IllegalAccessException 
+     * @throws IllegalAccessException
      */
-    
-    
     private void gethome() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
             // 都道府県取得SQL
@@ -338,12 +430,12 @@ public class UserPageAction extends AbstractDBAction {
 
     /**
      * カテゴリ取得
+     *
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws InstantiationException
-     * @throws IllegalAccessException 
+     * @throws IllegalAccessException
      */
-    
     private void getCategrys() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
             // カテゴリ取得SQL
@@ -382,7 +474,7 @@ public class UserPageAction extends AbstractDBAction {
     private void getArticleCategrys(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
             // カテゴリ取得SQL
-            String sql = "SELECT T0.code,T0.code_name,T1.count FROM mastercode AS T0 INNER JOIN (SELECT post_category,Count(post_id) As count from posts WHERE user_id=? group by post_category) AS T1 ON T0.code = T1.post_category WHERE code_id = 'CATCD'";
+            String sql = "SELECT T0.code,T0.code_name,T1.count FROM mastercode AS T0 INNER JOIN (SELECT post_category,Count(post_id) As count from posts WHERE user_id=? AND post_status = '01' group by post_category) AS T1 ON T0.code = T1.post_category WHERE code_id = 'CATCD'";
 
             Connection con = getConnection();
 
@@ -469,8 +561,6 @@ public class UserPageAction extends AbstractDBAction {
                 img.setFilefullpath(realPath);
                 img.setFilepath("." + tmpdir + "/" + createFile.getName());
 
-                logger.error(img.getFilepath());
-
                 setCurrentuserImage(img);
             }
             return user;
@@ -497,7 +587,7 @@ public class UserPageAction extends AbstractDBAction {
         try {
             ArrayList<Article> articles = new ArrayList<>();
             // ユーザ最新記事取得SQL
-            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_status = '01' and post_date=(SELECT MAX(post_date) FROM posts WHERE user_id=?)";
+            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_status = '01' and post_date=(SELECT MAX(post_date) FROM posts WHERE user_id=? AND post_status = '01')";
 
             Connection con = getConnection();
 
@@ -565,20 +655,20 @@ public class UserPageAction extends AbstractDBAction {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private  ArrayList<Article> getArticles(User user,String code) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private ArrayList<Article> getArticles(User user, String code) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
-            
+
             ArrayList<Article> articles = new ArrayList<>();
-            
+
             // ユーザ記事取得SQL
-            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_category=? ORDER BY post_date DESC, post_id ASC";
+            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_category=? AND post_status='01' ORDER BY post_date DESC, post_id DESC";
 
             Connection con = getConnection();
 
             PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setLong(1, user.getId());
-            stmt.setString(2,code);
+            stmt.setString(2, code);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -594,29 +684,25 @@ public class UserPageAction extends AbstractDBAction {
             }
 
             stmt.close();
-            
+
             return articles;
-            
+
         } catch (Exception e) {
 
             throw e;
 
         }
-    }    
-    
-private ArrayList<Comment> getComments(Article art) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    }
+
+    private void getComments(Article art) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
-            
-            ArrayList<Comment> comments = new ArrayList<>();
-            
-            
+
             // 記事のコメント取得SQL
             String sql = "SELECT comment_id, post_id,username,create_date,comment FROM comments WHERE post_id=?";
 
             Connection con = getConnection();
 
             PreparedStatement stmt = con.prepareStatement(sql);
-            logger.error(art.getPost_id());
             stmt.setLong(1, art.getPost_id());
 
             ResultSet rs = stmt.executeQuery();
@@ -632,12 +718,105 @@ private ArrayList<Comment> getComments(Article art) throws SQLException, ClassNo
             }
 
             stmt.close();
-            return comments;
+
         } catch (Exception e) {
 
             throw e;
 
         }
-    }     
-    
+    }
+
+    /**
+     * カレンダーリンク作成
+     *
+     * @throws Exception
+     */
+    private void createCaldata() throws Exception {
+        HttpServletRequest request = ServletActionContext.getRequest();
+
+        //年月から月末日を取得
+        Calendar cal = Calendar.getInstance();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+        //初日作成
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        String strFirstDay = sdf.format(cal.getTime());
+
+        int last = cal.getActualMaximum(Calendar.DATE);
+
+        //月末作成
+        cal.set(Calendar.DAY_OF_MONTH, last);
+        String strLastDay = sdf.format(cal.getTime());
+
+        //日付による記事リストを作成
+        getArticles(getShowUser(), strFirstDay, strLastDay);
+
+        //日付に記事があるかを設定
+        for (int i = 1; i <= last; i++) {
+
+            //値を一旦0で設定
+            calMap.put(String.valueOf(i), String.valueOf(0));
+
+            for (Article art : calarticles) {
+
+                cal.setTime(art.getPost_date());
+                //一致する日付のデータは、日付を値にセットする
+                if (i == cal.get(Calendar.DATE)) {
+                    calMap.put(String.valueOf(i), String.valueOf(i));
+                }
+            }
+        }
+        //セッションに格納
+        setCalArticles(calarticles);
+
+        setCalMap(calMap);
+
+        request.setAttribute("calMap", calMap);
+
+    }
+
+    /**
+     * 日付から記事取得
+     *
+     * @param user
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private void getArticles(User user, String firstday, String lastday) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        try {
+            // ユーザ記事取得SQL
+            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_date BETWEEN ? AND ? AND post_status='01'";
+
+            Connection con = getConnection();
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+
+            stmt.setLong(1, user.getId());
+            stmt.setString(2, firstday);
+            stmt.setString(3, lastday);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Article article = new Article();
+                article.setPost_id(rs.getLong("post_id"));
+                article.setPost_date(rs.getDate("post_date"));
+                article.setPost_category(rs.getString("post_category"));
+                article.setPost_title(rs.getString("post_title"));
+                article.setPost(rs.getString("post"));
+                article.setPos_status(rs.getString("post_status"));
+                calarticles.add(article);
+            }
+
+            stmt.close();
+        } catch (Exception e) {
+
+            throw e;
+
+        }
+    }
+
 }

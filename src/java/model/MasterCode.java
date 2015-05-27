@@ -5,11 +5,16 @@
  */
 package model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author lepra25-pc
  */
-public class MasterCode {
+public class MasterCode implements Serializable {
+
+    // Serial Version UID を付ける
+    private static final long serialVersionUID = 1L;
     
     private String code_id;
     private String code;

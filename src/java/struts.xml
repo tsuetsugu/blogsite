@@ -3,7 +3,7 @@
 <struts>
     <constant name="struts.devMode" value="true" />
     <package name="test" extends="struts-default">
-        <!-- 初期画面  --> 
+    <!-- 初期画面  --> 
         <action name="myPage">
             <result>/login.jsp</result>
         </action>
@@ -15,24 +15,24 @@
         <action name="move_userpage" class="action.UserPageAction" method="show">
             <result name="success">/userPage.jsp</result>
         </action>
-        <!-- ログイン画面 -->        
+    <!-- ログイン画面 -->        
         <action name="changed_pass">
             <result name="success">/chPass.jsp</result>
         </action>
-        <!-- パスワード変更画面  -->         
+    <!-- パスワード変更画面  -->         
         <action name="cance_chpass">
             <result name="success">/chPass.jsp</result>
         </action>
-        <!-- Myページ画面  -->
+    <!-- Myページ画面  -->
         <!-- 新規記事登録 -->             
-        <action name="write_article" class="action.ArticleEditAction" method="doInit">
+        <action name="write_article" class="action.ArticleEditAction" method="newArticle">
             <result>/articleEdit.jsp</result>
         </action>
         <!-- カテゴリのリンク押下 --> 
-        <action name="cat_article" class="action.MypageAction" method="getCatArticles">
+        <action name="cat_article" class="action.MypageAction" method="showCatArticles">
             <result name="success">/myPage.jsp</result>
         </action>
-        <action name="select_article" class="action.MypageAction" method="selectCatArticle">
+        <action name="select_article" class="action.MypageAction" method="showCatArticle">
             <result name="success">/myPage.jsp</result>
         </action>        
         <!--
@@ -62,15 +62,18 @@
             <result>/login.jsp</result>
         </action>
         
-        <!-- ユーザページ -->
+    <!-- ユーザページ -->
         <!-- 初期画面遷移 -->
         <action name="mv_index" class="action.UserPageAction" method="moveindex">
             <result name="success">/index.jsp</result>
         </action>         
         <!-- カテゴリのリンク押下 --> 
-        <action name="use_cat_article" class="action.UserPageAction" method="getCatArticles">
+        <action name="use_cat_article" class="action.UserPageAction" method="showCatArticles">
             <result name="success">/userPage.jsp</result>
-        </action>                
+        </action>
+        <action name="use_select_article" class="action.UserPageAction" method="showCatArticle">
+            <result name="success">/userPage.jsp</result>
+        </action>                       
         <!-- コメント追加 -->
         <action name="user_comment" method="userAddComment" class="action.CommentAction" >
             <result name="comment">/comment.jsp</result>
@@ -83,7 +86,7 @@
         <action name="userback" class="action.UserPageAction" method="back">
           <result name="userpage">/userPage.jsp</result>
         </action> 
-        <!-- プロフィール編集画面  -->         
+    <!-- プロフィール編集画面  -->         
  
         <action name="doUpload" class="action.UploadAction">    
             <result name="success">/profile.jsp</result>
@@ -95,7 +98,7 @@
         <action name="commit_profile">
             <result>/myPage.jsp</result>
         </action>
-        <!-- 記事登録編集画面  -->          
+    <!-- 記事登録編集画面  -->          
         <action name="cancel_article">
             <result>/myPage.jsp</result>
         </action>

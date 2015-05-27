@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import static constants.Constant.*;
 
 /**
  *
@@ -70,11 +71,11 @@ public class MypageAction extends AbstractDBAction {
     }
 
     /**
-     * カテゴリごとの記事取得
+     * 押下されたカテゴリの記事一覧表示
      *
      * @return
      */
-    public String getCatArticles() throws Exception {
+    public String showCatArticles() throws Exception {
 
         currentAirticles.clear();
 
@@ -91,17 +92,17 @@ public class MypageAction extends AbstractDBAction {
     }
 
     /**
-     * カテゴリごとの記事表示
+     * カテゴリ記事一覧で押下された記事表示
      *
      * @return
      */
-    public String selectCatArticle() throws Exception {
+    public String showCatArticle() throws Exception {
 
         currentAirticles.clear();
         comments.clear();
         outcomments.clear();
 
-        ArrayList<Article> arts = new ArrayList<>();
+        ArrayList<Article> showArts = new ArrayList<>();
 
         //記事取得
         currentAirticles = getSCatArticles();
@@ -110,14 +111,14 @@ public class MypageAction extends AbstractDBAction {
 
             if (article.getPost_id() == post_id) {
 
-                arts.add(article);
+                showArts.add(article);
                 //コメントのリスト作成
                 getComments(article);
             }
         }
 
-        //記事をセッションに設定
-        setArticles(arts);
+        //現在の記事としてセッションに設定
+        setArticles(showArts);
 
         //次へボタンはデフォルト非表示
         setNextflg(0);
@@ -127,19 +128,22 @@ public class MypageAction extends AbstractDBAction {
         int count = 0;
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示(5件)を超えた場合
-            if (count == 5) {
-                //次へボタン表示
-                setNextflg(1);
-                setComNextIndex(count);
-                break;
+                //次の表示を超えた場合
+                if (count > BODER) {
+                    //次へボタン表示
+                    setNextflg(1);
+                    setComNextIndex(count - 1);
+                    break;
+                }
+
+                if (count <= BODER) {
+                    outcomments.add(com);
+                }
             }
 
-            if (count <= 5) {
-                outcomments.add(com);
-            }
         }
 
         //表示用のコメントをセッションに格納
@@ -181,8 +185,6 @@ public class MypageAction extends AbstractDBAction {
     @Action("/logout")
     public String logout() {
 
-        logger.error("ログアウト");
-
         //ユーザディレクトリ削除
         DeleteFile del = new DeleteFile();
 
@@ -212,6 +214,9 @@ public class MypageAction extends AbstractDBAction {
      */
     public String next() {
 
+        outcomments.clear();
+        comments.clear();
+
         //全体のコメントリスト取得
         comments = getAllComments();
 
@@ -221,27 +226,31 @@ public class MypageAction extends AbstractDBAction {
 
         int count = 0;
 
-        //次のIndex取得
-        int backIndex = ((index / 5) - 1) * 5;
-        int nextIndex = ((index / 5)) * 5;
+        //前のIndex取得
+        int backIndex = ((index / BODER) - 1) * BODER;
+        int currentIndex = index;
 
+        //コメントの表示制御
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示を超えた場合
-            if (count == nextIndex + 5) {
-                setNextflg(1);
-                break;
+                //次の表示を超えた場合
+                if (count > currentIndex + BODER) {
+                    setNextflg(1);
+                    break;
+                }
+
+                if (count > currentIndex) {
+                    outcomments.add(com);
+                }
             }
 
-            if (count >= nextIndex) {
-                outcomments.add(com);
-            }
         }
 
         //INDEXをセッションに保持
-        setComNextIndex(count);
+        setComNextIndex(count - 1);
         setComBackIndex(backIndex);
 
         //表示用のコメントに設定
@@ -257,6 +266,8 @@ public class MypageAction extends AbstractDBAction {
      */
     public String back() {
 
+        outcomments.clear();
+        comments.clear();
         //全体のコメントリスト取得
         comments = getAllComments();
 
@@ -272,26 +283,28 @@ public class MypageAction extends AbstractDBAction {
 
         //最初の表示でなければ前へのボタンを表示
         if (firstIndex != 0) {
-            backIndex = ((index / 5) - 1) * 5;
+            backIndex = ((index / BODER) - 1) * BODER;
             setBackflg(1);
         }
 
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (post_id == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示を超えた場合
-            if (count == firstIndex + 5) {
-                setNextflg(1);
-                break;
-            }
+                //次の表示を超えた場合
+                if (count > firstIndex + BODER) {
+                    setNextflg(1);
+                    break;
+                }
 
-            if (count >= firstIndex) {
-                outcomments.add(com);
+                if (count > firstIndex) {
+                    outcomments.add(com);
+                }
             }
         }
         //INDEXをセッションに保持
-        setComNextIndex(count);
+        setComNextIndex(count - 1);
         setComBackIndex(backIndex);
         //表示用のコメントに設定
         setShowComments(outcomments);
@@ -311,7 +324,7 @@ public class MypageAction extends AbstractDBAction {
     private void getArticles(User user, String code) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
             // ユーザ記事取得SQL
-            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_category=? ORDER BY post_date DESC, post_id ASC";
+            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_category=? ORDER BY post_date DESC, post_id DESC";
 
             Connection con = getConnection();
 
@@ -335,8 +348,7 @@ public class MypageAction extends AbstractDBAction {
 
             stmt.close();
         } catch (Exception e) {
-
-            throw e;
+            logger.error(e.getStackTrace());
 
         }
     }
@@ -358,7 +370,6 @@ public class MypageAction extends AbstractDBAction {
             Connection con = getConnection();
 
             PreparedStatement stmt = con.prepareStatement(sql);
-            logger.error(art.getPost_id());
             stmt.setLong(1, art.getPost_id());
 
             ResultSet rs = stmt.executeQuery();

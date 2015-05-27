@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author lepra25-pc
@@ -12,8 +14,11 @@ package model;
 /**
  * ユーザ情報を保持します。
  */
-public class User {
+public class User implements Serializable {
 
+    // Serial Version UID を付ける
+    private static final long serialVersionUID = 1L;
+    
     /**
      * IDを保持します。
      */

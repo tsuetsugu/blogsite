@@ -5,11 +5,16 @@
  */
 package model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author lepra25-pc
  */
-public class ArticleCategory {
+public class ArticleCategory implements Serializable {
+   
+// Serial Version UID を付ける
+    private static final long serialVersionUID = 1L;    
     
     private String code;
     private String code_name;

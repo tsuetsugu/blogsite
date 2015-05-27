@@ -5,6 +5,7 @@
  */
 package action;
 
+import static constants.Constant.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -40,6 +41,7 @@ public class CalendarAction extends AbstractDBAction {
      */
     private static Logger logger = Logger.getLogger(IndexAction.class);
     private ArrayList<Article> articles = new ArrayList<>();
+    private ArrayList<Article> calarticles = new ArrayList<>();
     private Map<String, String> calMap = new HashMap<>();
     private ArrayList<Comment> comments = new ArrayList<>();
     private ArrayList<Comment> outcomments = new ArrayList<>();
@@ -93,6 +95,7 @@ public class CalendarAction extends AbstractDBAction {
 
         HttpServletRequest request = ServletActionContext.getRequest();
 
+        //年月の受け渡しの年跨ぎ対応
         if (month == 0) {
             year = year - 1;
             month = month + 1;
@@ -116,41 +119,48 @@ public class CalendarAction extends AbstractDBAction {
         cal.set(year, month - 1, last);
         String strLastDay = sdf.format(cal.getTime());
 
+        //ログインユーザが空の場合は、選択しているユーザで検索
         if (getCurrentUser() == null) {
 
-            getArticles(getShowUser(), strFirstDay, strLastDay);
+            getArticles(getShowUser(), strFirstDay, strLastDay, OPEN);
         } else {
             meflg = true;
             //日付による記事リストを作成
-            getArticles(getCurrentUser(), strFirstDay, strLastDay);
+            getArticles(getCurrentUser(), strFirstDay, strLastDay, "");
         }
         long firstArt = 0;
 
-        //calMap.clear();
-        //  if (articles.size() != 0) {
-        //日付に記事があるかを設定
+        logger.error("記事数:" + calarticles.size());
+
+        //記事がない場合
+        if (calarticles.isEmpty()) {
+            for (int i = 1; i <= last; i++) {
+
+                calMap.put(String.valueOf(i), String.valueOf(0));
+            }
+        }
         for (int i = 1; i <= last; i++) {
-
             calMap.put(String.valueOf(i), String.valueOf(0));
+            //日付に記事があるかを設定
+            for (Article art : calarticles) {
 
-            for (Article art : articles) {
-
+                //最初の記事だけ対象
                 if (firstArt == 0) {
                     firstArt = art.getPost_id();
+                    getComments(art);
                 }
-
-                getComments(art);
-
                 cal.setTime(art.getPost_date());
+
                 if (i == cal.get(Calendar.DATE)) {
+                    
                     calMap.put(String.valueOf(i), String.valueOf(i));
 
                 }
             }
         }
         //セッションに格納
-        setCalArticles(articles);
-        setArticles(articles);
+        setCalArticles(calarticles);
+        setArticles(calarticles);
         setAllComments(comments);
 
         int count = 0;
@@ -165,19 +175,20 @@ public class CalendarAction extends AbstractDBAction {
 
             if (firstArt == com.getPost_id()) {
                 count = count + 1;
+
+                //次の表示を超えた場合
+                if (count > BODER) {
+                    //次へボタン表示
+                    setNextflg(1);
+                    setComNextIndex(count - 1);
+                    break;
+                }
+
+                if (count <= BODER) {
+                    outcomments.add(com);
+                }
             }
 
-            //次の表示(5件)を超えた場合
-            if (count > 5) {
-                //次へボタン表示
-                setNextflg(1);
-                setComNextIndex(count - 1);
-                break;
-            }
-
-            if (count <= 5) {
-                outcomments.add(com);
-            }
         }
 
         //表示用のコメントをセッションに格納
@@ -194,16 +205,21 @@ public class CalendarAction extends AbstractDBAction {
         }
     }
 
+    /**
+     * カレンダの日付をクリックした場合の処理
+     *
+     * @return
+     * @throws Exception
+     */
     @Action("/selectDay")
-    public String selectDay() {
+    public String selectDay() throws Exception {
 
         boolean meflg = false;
-        
-        if(getCurrentUser() != null){
+
+        if (getCurrentUser() != null) {
             meflg = true;
         }
-        
-        
+
         HttpServletRequest request = ServletActionContext.getRequest();
 
         ArrayList<Article> dayarticles = new ArrayList<>();
@@ -217,6 +233,8 @@ public class CalendarAction extends AbstractDBAction {
         tmparticles = getCalArticles();
         tmpcomments = getAllComments();
 
+        logger.error(tmpcomments.size());
+
         long firstArt = 0;
 
         for (Article art : tmparticles) {
@@ -229,15 +247,11 @@ public class CalendarAction extends AbstractDBAction {
                     firstArt = art.getPost_id();
                 }
 
-                for (Comment com : tmpcomments) {
-                    if (com.getPost_id() == art.getPost_id()) {
-                        comments.add(com);
-                    }
-                    continue;
-                }
+                getComments(art);
             }
         }
 
+        setAllComments(comments);
         setArticles(dayarticles);
         int count = 0;
 
@@ -251,19 +265,21 @@ public class CalendarAction extends AbstractDBAction {
 
             if (firstArt == com.getPost_id()) {
                 count = count + 1;
+
+                //次の表示を超えた場合
+                if (count > BODER) {
+                    //次へボタン表示
+                    setNextflg(1);
+                    setComNextIndex(count - 1);
+                    break;
+                }
+
+                if (count <= BODER) {
+                    outcomments.add(com);
+                }
+
             }
 
-            //次の表示(5件)を超えた場合
-            if (count > 5) {
-                //次へボタン表示
-                setNextflg(1);
-                setComNextIndex(count - 1);
-                break;
-            }
-
-            if (count <= 5) {
-                outcomments.add(com);
-            }
         }
 
         //表示用のコメントをセッションに格納
@@ -271,7 +287,7 @@ public class CalendarAction extends AbstractDBAction {
 
         //画面に渡すパラメータ
         request.setAttribute("calMap", super.getCalMap());
-        
+
         if (meflg) {
             return "mypage";
         } else {
@@ -288,19 +304,28 @@ public class CalendarAction extends AbstractDBAction {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private void getArticles(User user, String firstday, String lastday) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void getArticles(User user, String firstday, String lastday, String status) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
-            // ユーザ記事取得SQL
-            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_date BETWEEN ? AND ?";
 
+            PreparedStatement stmt = null;
             Connection con = getConnection();
 
-            PreparedStatement stmt = con.prepareStatement(sql);
+            String sql = null;
+            if (OPEN.equals(status)) {
+                sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_date BETWEEN ? AND ? AND post_status=? ORDER BY post_date DESC,post_id DESC";
+                stmt = con.prepareStatement(sql);
+                stmt.setString(4, status);
+            } else {
+                sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? and post_date BETWEEN ? AND ? ORDER BY post_date DESC,post_id DESC";
+                stmt = con.prepareStatement(sql);
+
+            }
 
             stmt.setLong(1, user.getId());
             stmt.setString(2, firstday);
             stmt.setString(3, lastday);
 
+            // ユーザ記事取得SQL
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -311,7 +336,7 @@ public class CalendarAction extends AbstractDBAction {
                 article.setPost_title(rs.getString("post_title"));
                 article.setPost(rs.getString("post"));
                 article.setPos_status(rs.getString("post_status"));
-                articles.add(article);
+                calarticles.add(article);
             }
 
             stmt.close();
@@ -348,7 +373,7 @@ public class CalendarAction extends AbstractDBAction {
             stmt.close();
         } catch (Exception e) {
 
-            throw e;
+            e.getStackTrace();
 
         }
     }

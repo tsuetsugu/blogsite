@@ -5,6 +5,7 @@
  */
 package action;
 
+import static constants.Constant.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,9 +13,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import model.Article;
 import model.Comment;
-import model.User;
 import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -125,14 +124,14 @@ public class CommentAction extends AbstractDBAction {
             count = comments.indexOf(com);
 
             //次の表示(5件)を超えた場合
-            if (count == 5) {
+            if (count == BODER) {
                 //次へボタン表示
                 setNextflg(1);
                 setComNextIndex(count);
                 break;
             }
 
-            if (count <= 5) {
+            if (count <= BODER) {
                 outcomments.add(com);
             }
         }

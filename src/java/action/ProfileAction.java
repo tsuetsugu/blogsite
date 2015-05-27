@@ -105,14 +105,13 @@ public class ProfileAction extends AbstractDBAction {
             user.setTodo_code(home);
             user.setIntro_myself(myself);
             
-            logger.error(home);
+            //都道府県コード取得
+            mscds = getMasterCode("tdfcode");
             
            
             //出身地名を設定
             for (MasterCode mscd : mscds) {
-                logger.error(mscd.getCode() + ":" + home);
                 if (home.equals(mscd.getCode())) {
-                    logger.error(mscd.getCode() + ":" + home);
                     user.setHome(mscd.getCode_name());
                     break;
                 }

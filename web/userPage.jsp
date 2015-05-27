@@ -27,13 +27,30 @@
                     <s:url id="catarts" action="use_cat_article">
                         <s:param name="code"><s:property value="#cat.code"/></s:param>
                     </s:url>                        
-                    <s:a href="%{catarts}"><s:property value="#cat.code_name" />(<s:property value="#cat.count"/>)</s:a><br><br>
+                    <s:property value="#cat.code_name" />(<s:a href="%{catarts}"><s:property value="#cat.count"/></s:a>)<br><br>
                 </s:iterator>
+
+                <s:iterator value="%{#session.catArticles}" var="catArt" status="artst">
+
+                    <s:if test="#artst.first">
+                        <p>記事一覧</p>
+                    </s:if>
+                    <s:url id="arts" action="use_select_article">
+                        <s:param name="post_id"><s:property value="%{#catArt.post_id}"/></s:param>
+                    </s:url>                        
+                    <s:a href="%{arts}"><s:property value="#catArt.post_title" /></s:a><br><br>
+                </s:iterator>                     
+
+
+
+
+
             </div>
             <div id="content">
                 <s:iterator value="%{#session.currentArticles}" var="art" status="artst">
                     <s:if test="#artst.first">
                         <h4>タイトル：<s:property value="#art.post_title"/></h4>
+                        <p class="date"><s:property value="%{#art.post_date}"/></p>
                         <s:property value="#art.post"/><br><br>
 
                         <br>    
@@ -66,8 +83,6 @@
                                 </s:url>                        
                                 <s:a href="%{urlnext}">次</s:a>
                             </s:if>    
-
-
                         </s:form>
                     </s:if>
                 </s:iterator>

@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.ActionSupport;
+import static constants.Constant.*;
 import java.util.ArrayList;
 import model.Article;
 import model.ArticleCategory;
@@ -108,7 +109,7 @@ public abstract class AbstractDBAction extends ActionSupport
      * @return
      */
     public User getShowUser() {
-        return (User) _session.get("showuser");
+        return (User) _session.get(SESSION_SHOWUSER);
     }
 
     /**
@@ -117,7 +118,7 @@ public abstract class AbstractDBAction extends ActionSupport
      * @param user
      */
     protected void setShowtUser(User user) {
-        _session.put("showuser", user);
+        _session.put(SESSION_SHOWUSER, user);
     }    
     
     /**
@@ -160,7 +161,7 @@ public abstract class AbstractDBAction extends ActionSupport
      *
      */
     protected void setArticles(ArrayList<Article> articles) {
-        _session.put("currentArticles", articles);
+        _session.put(SESSION_CURARTS, articles);
     }
 
     /**

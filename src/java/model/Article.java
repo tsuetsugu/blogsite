@@ -12,7 +12,10 @@ import java.util.Date;
  *
  * @author lepra25-pc
  */
-public class Article{
+public class Article implements Serializable {
+    
+// Serial Version UID を付ける
+    private static final long serialVersionUID = 1L;    
     
     private long post_id;
     private long user_id;

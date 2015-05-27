@@ -42,6 +42,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import static constants.Constant.*;
 
 @Results({
     @Result(name = "login_success", location = "/myPage.jsp"),
@@ -55,8 +56,9 @@ public class SubmitAction extends AbstractDBAction {
     private String password;
     private ArrayList<MasterCode> mscds = new ArrayList<>();
     private ArrayList<Article> articles = new ArrayList<>();
+    private ArrayList<Article> calarticles = new ArrayList<>();
     private ArrayList<Comment> comments = new ArrayList<>();
-    private ArrayList<Article> currentAirticles = new ArrayList<>();
+    private ArrayList<MasterCode> statuscds = new ArrayList<>();
     private ArrayList<MasterCode> categrys = new ArrayList<>();
     private ArrayList<ArticleCategory> artcs = new ArrayList<>();
     private Image img = new Image();
@@ -110,15 +112,19 @@ public class SubmitAction extends AbstractDBAction {
         if (user != null) {
 
             //都道府県マスタ取得
-            setMscds(this.mscds);
-            setMasterCode("tdfcode", mscds);
+            getMasterCodes(TDFCD,mscds);
+            setMasterCode(SESSION_TDFCD, mscds);
 
             //カテゴリを取得
-            getCategrys();
+            getMasterCodes(CATCD,categrys);
+            setMasterCode(SESSION_CATCD, categrys);
+            //ステータス取得
+            getMasterCodes(STCD, statuscds);
+            setMasterCode(SESSION_STCD, statuscds);
 
             //カテゴリに該当する記事の件数を取得
             getArticleCategrys(user);
-            //カテゴリ一覧を設定
+            //記事のカテゴリ一覧を設定
             setArtCats(artcs);
 
             //出身地名を設定
@@ -132,19 +138,20 @@ public class SubmitAction extends AbstractDBAction {
             //セッションにユーザ情報を格納
             setCurrentUser(user);
 
-            //記事取得
+            //最新の記事取得
             getArticles(user);
 
-            //記事数取得
-            int artCount = getArtSize();
-
-            //最新の記事取得
-            if (artCount != 0) {
-                //最新の記事とコメントのリスト作成
-                createCurrentAirticles();
+            long firstArt = 0;
+            //コメントの取得
+            for (Article art : articles) {
+                if (firstArt == 0) {
+                    firstArt = art.getPost_id();
+                }
+                getComments(art);
             }
 
-            setArticles(currentAirticles);
+            //セッションに設定
+            setArticles(articles);
             setAllComments(comments);
 
             //カレンダーリンク用データ作成
@@ -160,21 +167,23 @@ public class SubmitAction extends AbstractDBAction {
 
             for (Comment com : comments) {
 
-                count = comments.indexOf(com);
+                //記事IDに一致する場合
+                if (firstArt == com.getPost_id()) {
+                    count = count + 1;
 
-                //次の表示(5件)を超えた場合
-                if (count == 5) {
-                    //次へボタン表示
-                    setNextflg(1);
-                    setComNextIndex(count);
-                    break;
-                }
+                    //次の表示(5件)を超えた場合
+                    if (count > BODER) {
+                        //次へボタン表示
+                        setNextflg(1);
+                        setComNextIndex(count - 1);
+                        break;
+                    }
 
-                if (count <= 5) {
-                    outcomments.add(com);
+                    if (count <= BODER) {
+                        outcomments.add(com);
+                    }
                 }
             }
-
             //表示用のコメントをセッションに格納
             setShowComments(outcomments);
 
@@ -221,7 +230,7 @@ public class SubmitAction extends AbstractDBAction {
             user = getLoginUser();
             //セッションにユーザ情報を格納
             setCurrentUser(user);
-            setArticles(currentAirticles);
+            setArticles(articles);
             setAllComments(comments);
             setShowComments(comments);
 
@@ -257,18 +266,8 @@ public class SubmitAction extends AbstractDBAction {
         return comments;
     }
 
-    public ArrayList<Article> getCurrentAirticles() {
-        return currentAirticles;
-    }
-
     public ArrayList<MasterCode> getMscds() {
         return mscds;
-    }
-
-    //出身地のリスト取得
-    public void setMscds(ArrayList<MasterCode> mscds) throws Exception {
-        gethome();
-
     }
 
     /**
@@ -409,7 +408,7 @@ public class SubmitAction extends AbstractDBAction {
     }
 
     /**
-     * 記事取得
+     * 最新の記事取得
      *
      * @param user
      * @throws SQLException
@@ -420,13 +419,15 @@ public class SubmitAction extends AbstractDBAction {
     private void getArticles(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
             // ユーザ記事取得SQL
-            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? ORDER BY post_date DESC, post_id ASC";
+            String sql = "SELECT post_id, post_date,post_category,post_title,post,post_status FROM posts WHERE user_id=? AND "
+                    + "post_date = (SELECT MAX(post_date) FROM posts WHERE user_id=?) ORDER BY post_id DESC";
 
             Connection con = getConnection();
 
             PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setLong(1, user.getId());
+            stmt.setLong(2, user.getId());
 
             ResultSet rs = stmt.executeQuery();
 
@@ -480,41 +481,25 @@ public class SubmitAction extends AbstractDBAction {
         }
     }
 
-    private void createCurrentAirticles() throws Exception {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        String strDate = "";
-        int count = 1;
-        for (Article article : articles) {
-            if (count == 1) {
-                strDate = sdf.format(article.getPost_date());
-                currentAirticles.add(article);
-
-                //コメントのリスト作成
-                getComments(article);
-                count++;
-                continue;
-            }
-
-            //日付が同じ場合、リストに追加
-            if (strDate.equals(sdf.format(article.getPost_date()))) {
-                currentAirticles.add(article);
-                //コメントのリスト作成
-                getComments(article);
-            }
-            count++;
-
-        }
-    }
-
-    private void gethome() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    /**
+     * マスターデータ取得
+     *
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private void getMasterCodes(String id,ArrayList<MasterCode> mscds) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         try {
-            // 都道府県取得SQL
-            String sql = "SELECT code, code_name FROM mastercode WHERE code_id='TDFCD'";
+            // カテゴリ取得SQL
+            String sql = "SELECT code, code_name FROM mastercode WHERE code_id=?";
 
             Connection con = getConnection();
 
             PreparedStatement stmt = con.prepareStatement(sql);
+ 
+            stmt.setString(1, id);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -531,34 +516,9 @@ public class SubmitAction extends AbstractDBAction {
             throw e;
 
         }
-    }
-
-    private void getCategrys() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        try {
-            // カテゴリ取得SQL
-            String sql = "SELECT code, code_name FROM mastercode WHERE code_id='CATCD'";
-
-            Connection con = getConnection();
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                MasterCode mscd = new MasterCode();
-                mscd.setCode(rs.getString("code"));
-                mscd.setCode_name(rs.getString("code_name"));
-                categrys.add(mscd);
-            }
-
-            stmt.close();
-        } catch (Exception e) {
-
-            throw e;
-
-        }
-    }
-
+    }    
+    
+    
     /**
      * カテゴリ毎の記事数を取得
      *
@@ -622,6 +582,11 @@ public class SubmitAction extends AbstractDBAction {
         return buf.toString();
     }
 
+    /**
+     * カレンダーリンク作成
+     *
+     * @throws Exception
+     */
     private void createCaldata() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
 
@@ -631,43 +596,35 @@ public class SubmitAction extends AbstractDBAction {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
         //初日作成
-        cal.set(Calendar.YEAR, Calendar.MONTH, 1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         String strFirstDay = sdf.format(cal.getTime());
 
         int last = cal.getActualMaximum(Calendar.DATE);
 
         //月末作成
-        cal.set(Calendar.YEAR, Calendar.MONTH, last);
+        cal.set(Calendar.DAY_OF_MONTH, last);
         String strLastDay = sdf.format(cal.getTime());
 
         //日付による記事リストを作成
         getArticles(getCurrentUser(), strFirstDay, strLastDay);
 
-        long firstArt = 0;
-
-        //calMap.clear();
-        //  if (articles.size() != 0) {
         //日付に記事があるかを設定
         for (int i = 1; i <= last; i++) {
 
+            //値を一旦0で設定
             calMap.put(String.valueOf(i), String.valueOf(0));
 
-            for (Article art : articles) {
+            for (Article art : calarticles) {
 
-                if (firstArt == 0) {
-                    firstArt = art.getPost_id();
-                }
-
-                //getComments(art);
                 cal.setTime(art.getPost_date());
+                //一致する日付のデータは、日付を値にセットする
                 if (i == cal.get(Calendar.DATE)) {
                     calMap.put(String.valueOf(i), String.valueOf(i));
-
                 }
             }
         }
         //セッションに格納
-        setCalArticles(articles);
+        setCalArticles(calarticles);
 
         setCalMap(calMap);
 
@@ -707,7 +664,7 @@ public class SubmitAction extends AbstractDBAction {
                 article.setPost_title(rs.getString("post_title"));
                 article.setPost(rs.getString("post"));
                 article.setPos_status(rs.getString("post_status"));
-                articles.add(article);
+                calarticles.add(article);
             }
 
             stmt.close();

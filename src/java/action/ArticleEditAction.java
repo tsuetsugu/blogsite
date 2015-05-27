@@ -5,6 +5,7 @@
  */
 package action;
 
+import static constants.Constant.BODER;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,20 +58,6 @@ public class ArticleEditAction extends AbstractDBAction {
         if (date == null) {
             addActionError("日付を入力してください");
         }
-    }
-
-    public String doInit() throws Exception {
-        //カテゴリ取得
-        getMasterCode("CATCD", catgcds);
-        setMasterCode("categorycode", catgcds);
-
-        //ステータス取得
-        getMasterCode("STCD", statuscds);
-        setMasterCode("statuscode", statuscds);
-
-        setPostId(0);
-
-        return "success";
     }
 
     public ArrayList<MasterCode> getCatgcds() {
@@ -139,6 +126,18 @@ public class ArticleEditAction extends AbstractDBAction {
     }
 
     /**
+     * 新規記事登録
+     *
+     * @return
+     * @throws Exception
+     */
+    public String newArticle() throws Exception {
+        setPostId(0);
+
+        return "success";
+    }
+
+    /**
      * 更新ボタン押下時の処理
      *
      * @return
@@ -156,8 +155,8 @@ public class ArticleEditAction extends AbstractDBAction {
         //新規記事登録の場合
         if (l_post_id == 0) {
             addArticle();
-            
-                        //カテゴリに該当する記事の件数を取得
+
+            //カテゴリに該当する記事の件数を取得
             getArticleCategrys(user);
             //カテゴリ一覧を設定
             setArtCats(artcs);
@@ -187,15 +186,15 @@ public class ArticleEditAction extends AbstractDBAction {
 
             count = comments.indexOf(com);
 
-            //次の表示(5件)を超えた場合
-            if (count == 5) {
+            //次の表示を超えた場合
+            if (count == BODER) {
                 //次へボタン表示
                 setNextflg(1);
                 setComNextIndex(count);
                 break;
             }
 
-            if (count <= 5) {
+            if (count <= BODER) {
                 outcomments.add(com);
             }
         }
@@ -278,11 +277,7 @@ public class ArticleEditAction extends AbstractDBAction {
             PreparedStatement stmt = getConnection().prepareStatement(sql);
             // SQL実行
 
-            logger.error("getuser");
-
             User user = getCurrentUser();
-
-            logger.error("getuserOK");
 
             stmt.setLong(1, user.getId());
             stmt.setDate(2, new java.sql.Date(date.getTime()));
@@ -295,13 +290,6 @@ public class ArticleEditAction extends AbstractDBAction {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             stmt.setString(7, sdf.format(today));
             int rs = stmt.executeUpdate();
-            // SQL実行
-                        /*
-             statement = getConnection().createStatement();
-             int num = statement
-             .executeUpdate("INSERT INTO tbl_user (user_id,password) VALUES('" + loginid + "','" +
-             password + "')");
-             */
 
             return rs;
         } catch (SQLException e) {
@@ -479,7 +467,6 @@ public class ArticleEditAction extends AbstractDBAction {
             throw e;
 
         }
-    }    
-    
-    
+    }
+
 }

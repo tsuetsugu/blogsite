@@ -25,7 +25,7 @@
             <div id="content">
                 <br>
                 <s:form action="search_use">
-                    ユーザ名で検索<s:textfield name="search" size="24" id="search"/>
+                    <s:label value="ユーザ名で検索" /><s:textfield name="search" size="24" id="search"/>
                     <s:submit value="検索"/>
                 </s:form>
 
