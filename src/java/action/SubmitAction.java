@@ -46,7 +46,7 @@ import static constants.Constant.*;
 
 @Results({
     @Result(name = "login_success", location = "/myPage.jsp"),
-    @Result(name = "login_error", location = "/login.jsp"),
+    @Result(name = "login_error", location = "/login.jsp" ),
     @Result(name = "add_success", location = "/myPage.jsp"),
     @Result(name = "input", location = "/login.jsp")
 })
@@ -72,6 +72,7 @@ public class SubmitAction extends AbstractDBAction {
     /**
      * バリデーション
      */
+    @Override
     public void validate() {
 
         //メッセージプロパティ取得
@@ -94,6 +95,39 @@ public class SubmitAction extends AbstractDBAction {
 
     }
 
+    public String getLoginid() {
+        return loginid;
+    }
+
+    public void setLoginid(String loginid) {
+        this.loginid = loginid;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getArtSize() {
+        return this.articles.size();
+    }
+
+    public ArrayList<Article> getArticles() {
+        return articles;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public ArrayList<MasterCode> getMscds() {
+        return mscds;
+    }    
+    
+    
     /**
      * ログイン処理
      *
@@ -225,7 +259,7 @@ public class SubmitAction extends AbstractDBAction {
         if (result == 0) {
             addActionError(prop.getProperty("adduser.error"));
             return "add_success";
-            //登録に成功した場合、メッセージを出力し結果画面へ遷移する   
+            //登録に成功した場合、マイページに遷移する   
         } else {
             user = getLoginUser();
             //セッションにユーザ情報を格納
@@ -234,41 +268,24 @@ public class SubmitAction extends AbstractDBAction {
             setAllComments(comments);
             setShowComments(comments);
 
+            //都道府県マスタ取得
+            getMasterCodes(TDFCD,mscds);
+            setMasterCode(SESSION_TDFCD, mscds);
+
+            //カテゴリを取得
+            getMasterCodes(CATCD,categrys);
+            setMasterCode(SESSION_CATCD, categrys);
+            //ステータス取得
+            getMasterCodes(STCD, statuscds);
+            setMasterCode(SESSION_STCD, statuscds);            
+            
+            
+            
             return "add_success";
         }
     }
 
-    public String getLoginid() {
-        return loginid;
-    }
 
-    public void setLoginid(String loginid) {
-        this.loginid = loginid;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getArtSize() {
-        return this.articles.size();
-    }
-
-    public ArrayList<Article> getArticles() {
-        return articles;
-    }
-
-    public ArrayList<Comment> getComments() {
-        return comments;
-    }
-
-    public ArrayList<MasterCode> getMscds() {
-        return mscds;
-    }
 
     /**
      * ログインユーザ検索

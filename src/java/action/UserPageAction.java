@@ -293,17 +293,11 @@ public class UserPageAction extends AbstractDBAction {
 
         //テンポラリ削除
         DeleteFile del = new DeleteFile();
-        if (getCurrentmyImage() != null) {
+        if (getCurrentuserImage() != null) {
 
-            if (getCurrentmyImage().getFilefullpath() != null) {
+            if (getCurrentuserImage().getFilefullpath() != null) {
 
-                File file = new File(getCurrentmyImage().getFilefullpath());
-                del.delFile(file);
-            }
-        } else if (getUploadImage() != null) {
-            if (getUploadImage().getFilefullpath() != null) {
-                File file = new File(getUploadImage().getFilefullpath());
-
+                File file = new File(getCurrentuserImage().getFilefullpath());
                 del.delFile(file);
             }
         }

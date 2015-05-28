@@ -7,7 +7,6 @@ package action;
 
 import static constants.Constant.*;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,12 +15,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import model.Article;
 import model.Comment;
 import model.User;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
@@ -93,7 +90,6 @@ public class CalendarAction extends AbstractDBAction {
         comments.clear();
         outcomments.clear();
 
-        HttpServletRequest request = ServletActionContext.getRequest();
 
         //年月の受け渡しの年跨ぎ対応
         if (month == 0) {
@@ -119,7 +115,7 @@ public class CalendarAction extends AbstractDBAction {
         cal.set(year, month - 1, last);
         String strLastDay = sdf.format(cal.getTime());
 
-        //ログインユーザが空の場合は、選択しているユーザで検索
+        //ログインユーザが空の場合は、選択しているユーザで記事検索
         if (getCurrentUser() == null) {
 
             getArticles(getShowUser(), strFirstDay, strLastDay, OPEN);
@@ -130,15 +126,7 @@ public class CalendarAction extends AbstractDBAction {
         }
         long firstArt = 0;
 
-        logger.error("記事数:" + calarticles.size());
 
-        //記事がない場合
-        if (calarticles.isEmpty()) {
-            for (int i = 1; i <= last; i++) {
-
-                calMap.put(String.valueOf(i), String.valueOf(0));
-            }
-        }
         for (int i = 1; i <= last; i++) {
             calMap.put(String.valueOf(i), String.valueOf(0));
             //日付に記事があるかを設定
@@ -196,7 +184,7 @@ public class CalendarAction extends AbstractDBAction {
 
         setCalMap(calMap);
 
-        request.setAttribute("calMap", calMap);
+
 
         if (meflg) {
             return "mypage";
@@ -220,20 +208,16 @@ public class CalendarAction extends AbstractDBAction {
             meflg = true;
         }
 
-        HttpServletRequest request = ServletActionContext.getRequest();
 
         ArrayList<Article> dayarticles = new ArrayList<>();
         ArrayList<Article> tmparticles = new ArrayList<>();
-        ArrayList<Comment> tmpcomments = new ArrayList<>();
 
         comments.clear();
 
         Calendar cal = Calendar.getInstance();
 
         tmparticles = getCalArticles();
-        tmpcomments = getAllComments();
 
-        logger.error(tmpcomments.size());
 
         long firstArt = 0;
 
@@ -286,7 +270,6 @@ public class CalendarAction extends AbstractDBAction {
         setShowComments(outcomments);
 
         //画面に渡すパラメータ
-        request.setAttribute("calMap", super.getCalMap());
 
         if (meflg) {
             return "mypage";

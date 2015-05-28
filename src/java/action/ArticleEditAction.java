@@ -13,7 +13,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import model.Article;
 import model.ArticleCategory;
 import model.Comment;
@@ -154,8 +157,10 @@ public class ArticleEditAction extends AbstractDBAction {
 
         //新規記事登録の場合
         if (l_post_id == 0) {
-            addArticle();
-
+            
+            //記事登録
+            addArticle();           
+            
             //カテゴリに該当する記事の件数を取得
             getArticleCategrys(user);
             //カテゴリ一覧を設定

@@ -15,12 +15,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="<s:url value="/css/common.css"/>" />
         <title>JSP Page</title>
     </head>
     <body>
         <%
-           
-            Map<String, String> calMap = (Map<String, String>) request.getAttribute("calMap");
+            Map<String, String> calMap = (Map<String, String>) session.getAttribute("calmap");
             Calendar cal = Calendar.getInstance();
 
             String strYear = request.getParameter("year");
@@ -53,8 +53,7 @@
         %>
 
         <br>
-        <div class="head">
-            <!--<a href="myPage.jsp?year=<%=year%>&month=<%=month - 1%>"><<</a> -->
+        <div class="calHeader">
             <s:url id="back_month" action="chmonth">
                 <s:param name="year"><%=year%></s:param>
                 <s:param name="month"><%=month - 1%></s:param>
@@ -62,52 +61,52 @@
             <s:a href="%{back_month}"><<</s:a>           
                 <!--現在の年月を表示-->
                 <span class="title"><%=year%>年<%=month%>月</span>
-            
-           <!-- <a href="myPage.jsp?year=<%=year%>&month=<%=month + 1%>">>></a> -->
+
+<!-- <a href="myPage.jsp?year=<%=year%>&month=<%=month + 1%>">>></a> -->
             <s:url id="next_month" action="chmonth">
                 <s:param name="year"><%=year%></s:param>
                 <s:param name="month"><%=month + 1%></s:param>
             </s:url>                        
             <s:a href="%{next_month}">>></s:a>               
-        </div>        
+        </div>
 
 
-        <table>
-            <tr>
-                <!--TH : Table Header-->
-                <th class="holiday">日</th>
-                <th class="weekday">月</th>
-                <th class="weekday">火</th>
-                <th class="weekday">水</th>
-                <th class="weekday">木</th>
-                <th class="weekday">金</th>
-                <th class="saturday">土</th>
-            <tr>
+        <table class="calTable">
+                    <tr>
+                        <!--TH : Table Header-->
+                        <th class="holiday">日</th>
+                        <th class="weekday">月</th>
+                        <th class="weekday">火</th>
+                        <th class="weekday">水</th>
+                        <th class="weekday">木</th>
+                        <th class="weekday">金</th>
+                        <th class="saturday">土</th>
+                    <tr>
 
-                <%
-                    for (int row = 0; row < 6; row++) {
-                %><tr><%
-                    for (int col = 0; col < 7; col++) {
-                %><%if (1 <= day && day <= lastDay) {%>
-                <%if(calMap == null || "0".equals(calMap.get(String.valueOf(day)))) {%>
-                <td><%=day%></td>
-                <%} else {%>
-                <td>
-                    <s:url id="select_day" action="selectDay">
-                        <s:param name="year"><%=year%></s:param>
-                        <s:param name="month"><%=month%></s:param>
-                        <s:param name="day"><%=day%></s:param>
-                    </s:url>
-                    <s:a href="%{select_day}"><%=day%></s:a>
-                </td><%}%>
-                <%} else {
-                %><td>&nbsp</td>
-                <%}
-                        day++;
-                    }
-                %></tr><%
-                    }
-                %></table>
+                    <%
+                        for (int row = 0; row < 6; row++) {
+                    %><tr><%
+                        for (int col = 0; col < 7; col++) {
+                    %><%if (1 <= day && day <= lastDay) {%>
+                    <%if (calMap == null || "0".equals(calMap.get(String.valueOf(day)))) {%>
+                    <td class="day"><%=day%></td>
+                    <%} else {%>
+                    <td class="day">
+                        <s:url id="select_day" action="selectDay">
+                            <s:param name="year"><%=year%></s:param>
+                            <s:param name="month"><%=month%></s:param>
+                            <s:param name="day"><%=day%></s:param>
+                        </s:url>
+                        <s:a href="%{select_day}"><%=day%></s:a>
+                    </td><%}%>
+                    <%} else {
+                    %><td>&nbsp</td>
+                    <%}
+                            day++;
+                        }
+                    %></tr><%
+                        }
+                    %></table>
 
 
     </body>

@@ -5,6 +5,7 @@
  */
 package action;
 
+import static constants.Constant.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -71,9 +72,8 @@ public class ProfileAction extends AbstractDBAction {
         //mscds = getMasterCode("tdfcode");
         //セッションがない場合のみ実行
         //if(mscds.isEmpty()){
-        
         setUploadImage(getCurrentmyImage());
-        
+
         setMscds(this.mscds);
         setMasterCode("tdfcode", mscds);
         //}
@@ -92,7 +92,7 @@ public class ProfileAction extends AbstractDBAction {
 
         //現在のユーザ取得
         User user = getCurrentUser();
-        
+
         //更新処理
         int result = updateProfile(user);
 
@@ -104,11 +104,10 @@ public class ProfileAction extends AbstractDBAction {
             user.setUsername(username);
             user.setTodo_code(home);
             user.setIntro_myself(myself);
-            
+
             //都道府県コード取得
-            mscds = getMasterCode("tdfcode");
-            
-           
+            mscds = getMasterCode(SESSION_TDFCD);
+
             //出身地名を設定
             for (MasterCode mscd : mscds) {
                 if (home.equals(mscd.getCode())) {
@@ -116,16 +115,18 @@ public class ProfileAction extends AbstractDBAction {
                     break;
                 }
             }
-            
-            Image img = new Image();
-            img.setFile(getUploadImage().getFile());
-            img.setFilename(getUploadImage().getFilename());
-            img.setFilepath(getUploadImage().getFilepath());
-            img.setImagesize(getUploadImage().getImagesize());
-            img.setUser_img(getUploadImage().getUser_img());
-            
-            setCurrentmyImage(img);
-            
+
+            if (getUploadImage() != null) {
+                Image img = new Image();
+                img.setFile(getUploadImage().getFile());
+                img.setFilename(getUploadImage().getFilename());
+                img.setFilepath(getUploadImage().getFilepath());
+                img.setImagesize(getUploadImage().getImagesize());
+                img.setUser_img(getUploadImage().getUser_img());
+
+                setCurrentmyImage(img);
+            }
+
             setCurrentUser(user);
         }
 
@@ -190,25 +191,30 @@ public class ProfileAction extends AbstractDBAction {
         }
     }
 
-    private int updateProfile(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException,IOException{
+    private int updateProfile(User user) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
         Statement statement = null;
         try {
             // ユーザ情報更新
             String sql = "UPDATE users SET username=?,todo_code=?, user_img=?,img_len=?,img_name=?,intro_myself=?, update_date=? WHERE user_id=?";
 
             PreparedStatement stmt = getConnection().prepareStatement(sql);
-            
-        //セッションから画像ファイル情報取得
+
+            //セッションから画像ファイル情報取得
             Image img = new Image();
             img = getUploadImage();
-            
-            
+
             // SQL実行
             stmt.setString(1, username);
             stmt.setString(2, home);
-            stmt.setBinaryStream(3,new FileInputStream(img.getFile()),img.getImagesize());
-            stmt.setInt(4,img.getImagesize());
-            stmt.setString(5,img.getFilename());
+            if (img != null) {
+                stmt.setBinaryStream(3, new FileInputStream(img.getFile()), img.getImagesize());
+                stmt.setInt(4, img.getImagesize());
+                stmt.setString(5, img.getFilename());
+            } else {
+                stmt.setBinaryStream(3, null);
+                stmt.setInt(4, 0);
+                stmt.setString(5, "");
+            }
             stmt.setString(6, myself);
             Date today = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");

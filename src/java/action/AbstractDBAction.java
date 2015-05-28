@@ -69,18 +69,12 @@ public abstract class AbstractDBAction extends ActionSupport
         _session = null;
     }
 
-    /**
-     * エラーメッセージを取得します。
-     *
-     * @return
-     */
-    public String getErrorMessage() {
-        return _errorMessage;
-    }
 
     /**
      * セッション情報を保存します。
+     * @param session
      */
+    @Override
     public void setSession(Map<String, Object> session) {
         _session = session;
     }
@@ -99,7 +93,7 @@ public abstract class AbstractDBAction extends ActionSupport
      *
      * @param user
      */
-    protected void setCurrentUser(User user) {
+    public void setCurrentUser(User user) {
         _session.put(SESSION_CURRENT_USER, user);
     }
 
@@ -117,21 +111,10 @@ public abstract class AbstractDBAction extends ActionSupport
      *
      * @param user
      */
-    protected void setShowtUser(User user) {
+    public void setShowtUser(User user) {
         _session.put(SESSION_SHOWUSER, user);
-    }    
-    
-    /**
-     * エラーを表示します。
-     *
-     * @param errorMessage
-     * @return
-     */
-    protected String showError(String errorMessage) {
-        _errorMessage = errorMessage;
-
-        return "error";
     }
+
 
     /**
      * マスタコードを設定します。
@@ -140,7 +123,7 @@ public abstract class AbstractDBAction extends ActionSupport
      * @param mscds
      *
      */
-    protected void setMasterCode(String code_id, ArrayList<MasterCode> mscds) {
+    public void setMasterCode(String code_id, ArrayList<MasterCode> mscds) {
         _session.put(code_id, mscds);
     }
 
@@ -151,16 +134,15 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public ArrayList<MasterCode> getMasterCode(String code_id) {
         return (ArrayList<MasterCode>) _session.get(code_id);
-    }    
-    
+    }
+
     /**
      * 記事(複数)を設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param articles
      *
      */
-    protected void setArticles(ArrayList<Article> articles) {
+    public void setArticles(ArrayList<Article> articles) {
         _session.put(SESSION_CURARTS, articles);
     }
 
@@ -170,17 +152,16 @@ public abstract class AbstractDBAction extends ActionSupport
      * @return
      */
     public ArrayList<Article> getArticles() {
-        return (ArrayList<Article>) _session.get("currentArticles");
-    }       
-    
+        return (ArrayList<Article>) _session.get(SESSION_CURARTS);
+    }
+
     /**
      * 記事(カテゴリ毎)を設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param articles
      *
      */
-    protected void setSCatArticles(ArrayList<Article> articles) {
+    public void setSCatArticles(ArrayList<Article> articles) {
         _session.put("catArticles", articles);
     }
 
@@ -191,17 +172,16 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public ArrayList<Article> getSCatArticles() {
         return (ArrayList<Article>) _session.get("catArticles");
-    }    
-    
-     /**
+    }
+
+    /**
      * 表示コメントを設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param comments
      *
      */
-    protected void setShowComments(ArrayList<Comment> comments) {
-        _session.put("currentComments", comments);
+    public void setShowComments(ArrayList<Comment> comments) {
+        _session.put("showComments", comments);
     }
 
     /**
@@ -210,17 +190,16 @@ public abstract class AbstractDBAction extends ActionSupport
      * @return
      */
     public ArrayList<Comment> getShowComments() {
-        return (ArrayList<Comment>) _session.get("currentComments");
-    }  
+        return (ArrayList<Comment>) _session.get("showComments");
+    }
 
     /**
      * 取得したコメントを設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param comments
      *
      */
-    protected void setAllComments(ArrayList<Comment> comments) {
+    public void setAllComments(ArrayList<Comment> comments) {
         _session.put("allComments", comments);
     }
 
@@ -231,17 +210,15 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public ArrayList<Comment> getAllComments() {
         return (ArrayList<Comment>) _session.get("allComments");
-    }    
-    
-    
+    }
+
     /**
-     * 記事(を設定します。
+     * 記事設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param article
      *
      */
-    protected void setArticle(Article article) {
+    public void setArticle(Article article) {
         _session.put("currentArticle", article);
     }
 
@@ -252,17 +229,15 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public Article getArticle() {
         return (Article) _session.get("currentArticle");
-    }  
-    
-    
+    }
+
     /**
-     *  記事IDを設定します。
+     * 記事IDを設定します。
      *
-     * @param code_id
-     * @param mscds
+     * @param post_id
      *
      */
-    protected void setPostId(long post_id) {
+    public void setPostId(long post_id) {
         _session.put("currentPostid", post_id);
     }
 
@@ -273,16 +248,15 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public long getPostId() {
         return (long) _session.get("currentPostid");
-    }  
- 
-/**
+    }
+
+    /**
      * カテゴリごとの記事件数一覧
      *
-     * @param code_id
-     * @param mscds
+     * @param artCats
      *
      */
-  protected void setArtCats(ArrayList<ArticleCategory> artCats) {
+    protected void setArtCats(ArrayList<ArticleCategory> artCats) {
         _session.put("artCategorys", artCats);
     }
 
@@ -293,14 +267,14 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public ArrayList<ArticleCategory> getArtCats() {
         return (ArrayList<ArticleCategory>) _session.get("artCategorys");
-    }    
-    
+    }
+
     /**
      * 特定セッションの削除
-     * @param key 
+     *
+     * @param key
      */
-    
-    public void delSession(String key){
+    public void delSession(String key) {
         _session.remove(key);
     }
 
@@ -310,19 +284,18 @@ public abstract class AbstractDBAction extends ActionSupport
      * @param image
      *
      */
-  protected void setCurrentmyImage(Image image) {
+    public void setCurrentmyImage(Image image) {
         _session.put("currentprofileimage", image);
     }
-    
-    
+
     /**
      * 現在の自分プロフィール画像
      *
      * @return
      */
-    protected Image getCurrentmyImage() {
+    public Image getCurrentmyImage() {
         return (Image) _session.get("currentprofileimage");
-    }    
+    }
 
     /**
      * 現在のユーザプロフィール画像
@@ -330,31 +303,29 @@ public abstract class AbstractDBAction extends ActionSupport
      * @param image
      *
      */
-  protected void setCurrentuserImage(Image image) {
+    public void setCurrentuserImage(Image image) {
         _session.put("currentuserprofileimage", image);
     }
-    
-    
+
     /**
      * 現在のユーザプロフィール画像
      *
      * @return
      */
-    protected Image getCurrentuserImage() {
+    public Image getCurrentuserImage() {
         return (Image) _session.get("currentuserprofileimage");
-    }    
-    
-        /**
+    }
+
+    /**
      * アップロードのプロフィール画像
      *
      * @param image
      *
      */
-  protected void setUploadImage(Image image) {
+    public void setUploadImage(Image image) {
         _session.put("uploadprofileimage", image);
     }
-    
-    
+
     /**
      * アップロードのプロフィール画像
      *
@@ -362,85 +333,76 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public Image getUploadImage() {
         return (Image) _session.get("uploadprofileimage");
-    } 
-
-    public int getComentcnt(){
-        return (int) _session.get("commentcnt");
     }
 
-    public void setCommentcnt(int cnt){
-        _session.put("commentcnt", cnt);
-    }    
-    
-    public int getComBackIndex(){
+    public int getComBackIndex() {
         return (int) _session.get("backindex");
     }
 
-    public void setComBackIndex(int index){
+    public void setComBackIndex(int index) {
         _session.put("backindex", index);
     }
-    
-    
-    public int getComNextIndex(){
+
+    public int getComNextIndex() {
         return (int) _session.get("nextindex");
     }
 
-    public void setComNextIndex(int index){
+    public void setComNextIndex(int index) {
         _session.put("nextindex", index);
-    }    
-    
+    }
+
     /**
      * コメント次へ表示のためのフラグ
-     * @return 
+     *
+     * @return
      */
-    
-    public int getNextflg(){
+    public int getNextflg() {
         return (int) _session.get("nextflg");
     }
 
-    public void setNextflg(int flg){
+    public void setNextflg(int flg) {
         _session.put("nextflg", flg);
-    }    
+    }
 
-     /**
+    /**
      * コメント前へ表示のためのフラグ
-     * @return 
+     *
+     * @return
      */
-    
-    public int getBackflg(){
+    public int getBackflg() {
         return (int) _session.get("backflg");
     }
 
-    public void setBackflg(int flg){
+    public void setBackflg(int flg) {
         _session.put("backflg", flg);
-    }  
+    }
 
-     /**
+    /**
      * カレンダーの記事リスト
-     * @return 
+     *
+     * @return
      */
-    
-    public ArrayList<Article> getCalArticles(){
+    public ArrayList<Article> getCalArticles() {
         return (ArrayList<Article>) _session.get("calarticles");
     }
 
-    public void setCalArticles(ArrayList<Article> calart){
+    public void setCalArticles(ArrayList<Article> calart) {
         _session.put("calarticles", calart);
-    }     
-
-     /**
-     * カレンダーの記事リスト
-     * @return 
-     */
-    
-    public Map<String,String> getCalMap(){
-        return (Map<String,String>) _session.get("calmap");
     }
 
-    public void setCalMap(Map<String,String> calmap){
+    /**
+     * カレンダーの記事リスト
+     *
+     * @return
+     */
+    public Map<String, String> getCalMap() {
+        return (Map<String, String>) _session.get("calmap");
+    }
+
+    public void setCalMap(Map<String, String> calmap) {
         _session.put("calmap", calmap);
-    }    
-    
+    }
+
     /**
      * セッションクリア
      *
@@ -448,9 +410,8 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     public void delSession() {
         _session.clear();
-    }      
-    
-    
+    }
+
     /**
      * 接続オブジェクトを生成します。
      *
@@ -463,8 +424,7 @@ public abstract class AbstractDBAction extends ActionSupport
             return _pooledConnection;
         }
 
-        String url = "jdbc:mysql://localhost:3306/blog?user=root&password=lepra&"
-                + "useUnicode=true&characterEncoding=utf8&useServerPrepStmts=true";
+        String url = DB_URL;
 
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -479,9 +439,5 @@ public abstract class AbstractDBAction extends ActionSupport
             throw e;
         }
     }
-    
-    
-    
-    
 
 }

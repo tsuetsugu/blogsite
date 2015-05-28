@@ -103,13 +103,16 @@ public class CommentAction extends AbstractDBAction {
      */
     @Action("/addComment")
     public String addComment() throws Exception {
-
+        
+       
+        logger.error("コメント追加" + getPostId());
         //setPost_id(getPostId());
         //コメント登録
         insertComment(getPostId());
 
         //記事の最新コメントを再度抽出して置き換え
         getComments(getPostId());
+        logger.error("コメント数" + comments.size());
         setAllComments(comments);
         //次へボタンはデフォルト非表示
         setNextflg(0);
@@ -121,19 +124,22 @@ public class CommentAction extends AbstractDBAction {
 
         for (Comment com : comments) {
 
-            count = comments.indexOf(com);
+            if (getPostId() == com.getPost_id()) {
+                count = count + 1;
 
-            //次の表示(5件)を超えた場合
-            if (count == BODER) {
-                //次へボタン表示
-                setNextflg(1);
-                setComNextIndex(count);
-                break;
+                //次の表示を超えた場合
+                if (count > BODER) {
+                    //次へボタン表示
+                    setNextflg(1);
+                    setComNextIndex(count-1);
+                    break;
+                }
+
+                if (count <= BODER) {
+                    outcomments.add(com);
+                }
             }
 
-            if (count <= BODER) {
-                outcomments.add(com);
-            }
         }
 
         //表示用のコメントをセッションに格納

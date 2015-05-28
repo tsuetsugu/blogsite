@@ -195,7 +195,9 @@ public class MypageAction extends AbstractDBAction {
                 File file = new File(getCurrentmyImage().getFilefullpath());
                 del.delFile(file);
             }
-        } else if (getUploadImage() != null) {
+        }
+        
+        if (getUploadImage() != null) {
             if (getUploadImage().getFilefullpath() != null) {
                 File file = new File(getUploadImage().getFilefullpath());
 

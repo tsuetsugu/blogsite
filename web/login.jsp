@@ -33,9 +33,9 @@ function addUser() {
         <s:actionerror />
         <s:form id="loginId">
             <s:label value="ログインID："/>
-            <s:textfield cssClass="loginid" name="loginid" value="" size="24" id="loginid"/><br/><br/>
+            <s:textfield cssClass="loginid" name="loginid" value="" id="loginid"/><br/><br/>
             <s:label value="パスワード："/>
-            <s:password cssClass="password" name="password" value="" size="24" id="password"/><br/><br/>
+            <s:password cssClass="password" name="password" value="" id="password"/><br/><br/>
         </s:form>
         <input type="submit" value="ログイン" onClick="doLogin()"/>
         <input type="submit" value="新規登録" onClick="addUser()"/><br/><br/>        
