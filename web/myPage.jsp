@@ -37,10 +37,8 @@
                     <s:url id="arts" action="select_article">
                         <s:param name="post_id"><s:property value="%{#catArt.post_id}"/></s:param>
                     </s:url>                        
-                        <p class="articleList"><s:a href="%{arts}"><s:property value="#catArt.post_title" /></s:a></p>
+                    <p class="articleList"><s:a href="%{arts}"><s:property value="#catArt.post_title" /></s:a></p>
                 </s:iterator>    
-
-
             </div>
             <div id="content">
                 <s:form action="write_article">
@@ -49,8 +47,8 @@
                 </s:form>
 
                 <s:iterator value="%{#session.currentArticles}" var="art" status="artst">
-                    <div class="article"> 
-                        <s:if test="#artst.first">
+                    <s:if test="#artst.count==1">
+                        <div class="article">
                             <s:form action="editArticle">                   
                                 <p class="articleTitle"><s:property value="%{#art.post_title}"/></p>
                                 <p class="date"><s:property value="%{#art.post_date}"/></p>
@@ -60,7 +58,10 @@
                                 <p class="articleEdit"><s:submit value="記事編集"/></p>
                             </s:form>
                         </div>
-                        <p></p>
+                    </s:if>
+
+                    <p></p>
+                    <s:if test="#artst.first">
                         <div class="comment">
                             <h4 class="commentTitle">コメント</h4>
                             <s:form action="write_comment">
@@ -94,6 +95,7 @@
                             </s:form>
                         </div>
                     </s:if>
+
                 </s:iterator>
             </div>
             <div id="sidebar02">

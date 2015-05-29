@@ -20,17 +20,27 @@ import model.Comment;
 import model.User;
 import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.InterceptorRefs;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 
 @Results({
     @Result(name = "mypage", location = "/myPage.jsp"),
-    @Result(name = "userpage", location = "/userPage.jsp"),})
+    @Result(name = "userpage", location = "/userPage.jsp"),
+@Result(name = "login", location = "/login.jsp")})
 
 /**
  *
  * @author lepra25-pc
  */
+
+@ParentPackage("test")
+@InterceptorRefs({
+    @InterceptorRef("blogStack")
+})
+
 public class CalendarAction extends AbstractDBAction {
 
     /**

@@ -33,6 +33,7 @@
                         <td valign="top" bgcolor="#F2F2F2">プロフィール画像</td>
                         <td valign="top">
                             <img src="<s:property value = "%{#session.uploadprofileimage.filepath}"/>" width="193" height="130"/><br><br>
+                            <img src="data:image/<s:property value = "contentType"/>;base64,<s:property value = "encodeResult"/>">
                     </td>
                 </tr>
 

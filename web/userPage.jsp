@@ -48,13 +48,16 @@
             </div>
             <div id="content">
                 <s:iterator value="%{#session.currentArticles}" var="art" status="artst">
-                    <div class="article">
-                        <s:if test="#artst.first">
+
+                    <s:if test="#artst.first">
+                        <div class="article">
                             <p class="articleTitle"><s:property value="#art.post_title"/></p>
                             <p class="date"><s:property value="%{#art.post_date}"/></p>
                             <p class="details"><s:property value="#art.post"/></p>
                         </div>
-                        <p></p>
+                    </s:if>
+                    <p></p>
+                    <s:if test="#artst.first">
                         <div class="comment">
                             <h4 class="commentTitle">コメント</h4>   
                             <s:form action="user_comment">

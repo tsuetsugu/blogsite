@@ -15,7 +15,9 @@
     <body>
         <h1>コメント追加画面</h1>
         <s:actionerror />
-        <s:form action="addComment">
+        <s:form action="add_comment">
+            <s:token/>
+           
             <table width="100%"  border="1" cellpadding="3" cellspacing="1" bordercolor="#CCCCCC">
                 <tr>
                     <td valign="top" bgcolor="#F2F2F2">タイトル</td>

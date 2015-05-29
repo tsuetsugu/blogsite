@@ -5,8 +5,6 @@
  */
 package action;
 
-import static action.PropertiesWithUtf8.loadUtf8Properties;
-import static action.SubmitAction.getSha256;
 import static com.opensymphony.xwork2.Action.SUCCESS;
 import static constants.Constant.BODER;
 import java.io.File;
@@ -22,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import model.Article;
 import model.ArticleCategory;

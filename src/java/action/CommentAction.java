@@ -13,8 +13,11 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.servlet.http.HttpSession;
 import model.Comment;
+import model.User;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
@@ -43,8 +46,9 @@ public class CommentAction extends AbstractDBAction {
     /**
      * Logger.
      */
-    private static Logger logger = Logger.getLogger(IndexAction.class);
-
+    private static Logger logger = Logger.getLogger(IndexAction.class);    
+    
+    
     public String getUserName() {
         return userName;
     }
@@ -101,18 +105,23 @@ public class CommentAction extends AbstractDBAction {
      * @return
      * @throws Exception
      */
-    @Action("/addComment")
+   // @Action("/addComment")
     public String addComment() throws Exception {
         
-       
-        logger.error("コメント追加" + getPostId());
-        //setPost_id(getPostId());
+        if (userName == null) {
+            addActionError("ユーザ名を入力してください");
+            return "input";
+        }
+        if (comment == null || comment.isEmpty()){
+            addActionError("コメントを入力してください");
+            return "input";
+        }
+        
         //コメント登録
         insertComment(getPostId());
 
         //記事の最新コメントを再度抽出して置き換え
         getComments(getPostId());
-        logger.error("コメント数" + comments.size());
         setAllComments(comments);
         //次へボタンはデフォルト非表示
         setNextflg(0);

@@ -40,10 +40,6 @@ public abstract class AbstractDBAction extends ActionSupport
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 現在のユーザを保持するセッション変数を示します。
-     */
-    protected static final String SESSION_CURRENT_USER = "currentUser";
 
     /**
      * コネクションプール。
@@ -103,7 +99,7 @@ public abstract class AbstractDBAction extends ActionSupport
      * @return
      */
     public User getShowUser() {
-        return (User) _session.get(SESSION_SHOWUSER);
+        return (User) _session.get(SESSION_SHOW_USER);
     }
 
     /**
@@ -112,7 +108,7 @@ public abstract class AbstractDBAction extends ActionSupport
      * @param user
      */
     public void setShowtUser(User user) {
-        _session.put(SESSION_SHOWUSER, user);
+        _session.put(SESSION_SHOW_USER, user);
     }
 
 

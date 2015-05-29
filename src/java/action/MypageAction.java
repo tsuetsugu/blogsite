@@ -20,6 +20,9 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import static constants.Constant.*;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.InterceptorRefs;
+import org.apache.struts2.convention.annotation.ParentPackage;
 
 /**
  *
@@ -28,8 +31,15 @@ import static constants.Constant.*;
 @Results({
     @Result(name = "success", location = "/articleEdit.jsp"),
     @Result(name = "error", location = "/login.jsp"),
-    @Result(name = "logout", location = "/index.jsp")
+    @Result(name = "logout", location = "/index.jsp"),
+    @Result(name = "login", location = "/login.jsp")
 })
+
+@ParentPackage("test")
+@InterceptorRefs({
+    @InterceptorRef("blogStack")
+})
+
 public class MypageAction extends AbstractDBAction {
 
     private static Logger logger = Logger.getLogger(IndexAction.class);
@@ -41,6 +51,8 @@ public class MypageAction extends AbstractDBAction {
     private int index;
     private String code;
 
+    
+    
     public long getPost_id() {
         return post_id;
     }
@@ -189,16 +201,18 @@ public class MypageAction extends AbstractDBAction {
         DeleteFile del = new DeleteFile();
 
         if (getCurrentmyImage() != null) {
-
+            logger.error("カレントイメージ：");
             if (getCurrentmyImage().getFilefullpath() != null) {
-
+                logger.error("カレントイメージ：" + getCurrentmyImage().getFilefullpath());
                 File file = new File(getCurrentmyImage().getFilefullpath());
                 del.delFile(file);
             }
         }
         
         if (getUploadImage() != null) {
+            logger.error("アップロードイメージ：");
             if (getUploadImage().getFilefullpath() != null) {
+                logger.error("アップロードイメージ：" + getUploadImage().getFilefullpath());
                 File file = new File(getUploadImage().getFilefullpath());
 
                 del.delFile(file);

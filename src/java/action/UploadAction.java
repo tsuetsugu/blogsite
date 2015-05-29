@@ -38,14 +38,12 @@ public class UploadAction extends AbstractDBAction {
     private File file;
     private String contentType;
     private String filename;
+    private String encodeResult;
 
     public void setUpload(File file) {
         this.file = file;
     }
 
-    public void setUploadContentType(String contentType) {
-        this.contentType = contentType;
-    }
 
     public void setUploadFileName(String filename) {
         this.filename = filename;
@@ -59,14 +57,36 @@ public class UploadAction extends AbstractDBAction {
         return contentType;
     }
 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+
+
     public String getFilename() {
         return filename;
+    }
+
+    public String getEncodeResult() {
+        return encodeResult;
+    }
+
+    public void setEncodeResult(String encodeResult) {
+        this.encodeResult = encodeResult;
     }
 
 
     public String execute() throws Exception {
         
     //BufferedImage readImage = null;
+
+        if (file != null && file.exists()) {
+            
+            setEncodeResult(FileBase64.encode(file));
+            
+        }
+        
+        
         
         User user = getCurrentUser();
         String realPath = ServletActionContext.getServletContext().getRealPath("/" + user.getId()); 

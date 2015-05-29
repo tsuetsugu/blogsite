@@ -31,10 +31,10 @@
 
                 <br>    
 
-
+                <div class="showuser">
                 <s:iterator value="users" status="rs" var="user">
                     <s:if test="#rs.first">
-                        <h3>ユーザID：ユーザ名</h3>
+                        <h3 class="userheader">ユーザID：ユーザ名</h3>
                     </s:if> 
                     <s:url id="mvuser" action="move_userpage">
                         <s:param name="id"><s:property value="#user.id"/></s:param>
@@ -42,6 +42,7 @@
                     <s:a href="%{mvuser}"><s:property value="#user.id"/>：<s:property value="#user.username"/></s:a><br>
 
                 </s:iterator>
+                </div>    
                 <s:actionerror />
             </div>
             <div id="footer"></div>

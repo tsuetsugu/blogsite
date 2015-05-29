@@ -3,110 +3,162 @@
 <struts>
     <constant name="struts.devMode" value="true" />
     <package name="test" extends="struts-default">
+        
+        <!-- インターセプタ -->
+        <interceptors>
+            <interceptor name="login" class="interceptor.LoginInterceptor" />
+            <interceptor-stack name="blogStack">
+                <interceptor-ref name="login" />
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+   
     <!-- 初期画面  --> 
-        <action name="myPage">
-            <result>/login.jsp</result>
-        </action>
-        <action name="search_use" class="action.IndexAction" method="show">
-            <result name="success">/index.jsp</result>
-        </action>
+    <action name="myPage">
+        <result>/login.jsp</result>
+    </action>
+    <action name="search_use" class="action.IndexAction" method="show">
+        <result name="success">/index.jsp</result>
+    </action>
         
-        <!-- ユーザページへの遷移 -->
-        <action name="move_userpage" class="action.UserPageAction" method="show">
-            <result name="success">/userPage.jsp</result>
-        </action>
+    <!-- ユーザページへの遷移 -->
+    <action name="move_userpage" class="action.UserPageAction" method="show">
+        <result name="success">/userPage.jsp</result>
+    </action>
     <!-- ログイン画面 -->        
-        <action name="changed_pass">
-            <result name="success">/chPass.jsp</result>
-        </action>
+    <action name="changed_pass">
+        <result name="success">/chPass.jsp</result>
+    </action>
     <!-- パスワード変更画面  -->         
-        <action name="cance_chpass">
-            <result name="success">/chPass.jsp</result>
-        </action>
+    <action name="cance_chpass">
+        <result name="success">/chPass.jsp</result>
+    </action>
     <!-- Myページ画面  -->
-        <!-- 新規記事登録 -->             
-        <action name="write_article" class="action.ArticleEditAction" method="newArticle">
-            <result>/articleEdit.jsp</result>
-        </action>
-        <!-- カテゴリのリンク押下 --> 
-        <action name="cat_article" class="action.MypageAction" method="showCatArticles">
-            <result name="success">/myPage.jsp</result>
-        </action>
-        <action name="select_article" class="action.MypageAction" method="showCatArticle">
-            <result name="success">/myPage.jsp</result>
-        </action>        
-        <!--
-        <action name="edit_article" class="action.ArticleEditAction" method="doInit">
-            <result>/articleEdit.jsp</result>
-        </action>
-        -->       
+    <!-- 新規記事登録 -->             
+    <action name="write_article" class="action.ArticleEditAction" method="newArticle">
+        <interceptor-ref name="blogStack"/>
+        <result name="success">/articleEdit.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
+    <!-- カテゴリのリンク押下 --> 
+    <action name="cat_article" class="action.MypageAction" method="showCatArticles">
+        <interceptor-ref name="blogStack"/>
+        <result name="success">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
+    <!-- カテゴリ記事押下 -->
+    <action name="select_article" class="action.MypageAction" method="showCatArticle">
+        <interceptor-ref name="blogStack"/>
+        <result name="success">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>        
+    <!--
+    <action name="edit_article" class="action.ArticleEditAction" method="doInit">
+        <result>/articleEdit.jsp</result>
+    </action>
+    -->       
 
-        <!-- プロフィール編集 -->
-        <action name="edit_profile" class="action.ProfileAction" method="show">
-            <result name="success">/profile.jsp</result>
-        </action>
-        <!-- コメント追加 -->
-        <action name="write_comment" method="doInit" class="action.CommentAction" >
-            <result name="comment">/comment.jsp</result>
-        </action>
-         <!-- コメント次へボタン -->
-        <action name="mynext" class="action.MypageAction" method="next">
-          <result name="mypage">/myPage.jsp</result>
-        </action>
-        <!-- コメント前へボタン -->
-        <action name="myback" class="action.MypageAction" method="back">
-          <result name="mypage">/myPage.jsp</result>
-        </action>
-        <!-- ログアウト -->           
-        <action name="logout">
-            <result>/login.jsp</result>
-        </action>
-        
-    <!-- ユーザページ -->
-        <!-- 初期画面遷移 -->
-        <action name="mv_index" class="action.UserPageAction" method="moveindex">
-            <result name="success">/index.jsp</result>
-        </action>         
-        <!-- カテゴリのリンク押下 --> 
-        <action name="use_cat_article" class="action.UserPageAction" method="showCatArticles">
-            <result name="success">/userPage.jsp</result>
-        </action>
-        <action name="use_select_article" class="action.UserPageAction" method="showCatArticle">
-            <result name="success">/userPage.jsp</result>
-        </action>                       
-        <!-- コメント追加 -->
-        <action name="user_comment" method="userAddComment" class="action.CommentAction" >
-            <result name="comment">/comment.jsp</result>
-        </action>
-         <!-- コメント次へボタン -->
-        <action name="usernext" class="action.UserPageAction" method="next">
-          <result name="userpage">/userPage.jsp</result>
-        </action>
-        <!-- コメント前へボタン -->
-        <action name="userback" class="action.UserPageAction" method="back">
-          <result name="userpage">/userPage.jsp</result>
-        </action> 
+    <!-- プロフィール編集 -->
+    <action name="edit_profile" class="action.ProfileAction" method="show">
+        <interceptor-ref name="blogStack"/>
+        <result name="success">/profile.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
     <!-- プロフィール編集画面  -->         
  
-        <action name="doUpload" class="action.UploadAction">    
-            <result name="success">/profile.jsp</result>
-        </action>
-                      
-        <action name="cancel_profile" class="action.ProfileAction" method="cancelporofile">
-            <result name="cancel_profile">/myPage.jsp</result>
-        </action>
-        <action name="commit_profile">
-            <result>/myPage.jsp</result>
-        </action>
+    <action name="doUpload" class="action.UploadAction">
+        <interceptor-ref name="blogStack"/>  
+        <result name="success">/profile.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>    
+    <action name="cancel_profile" class="action.ProfileAction" method="cancelporofile">
+         <interceptor-ref name="blogStack"/>  
+        <result name="cancel_profile">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>    
+    <action name="commit_profile">
+        <interceptor-ref name="blogStack"/> 
+        <result>/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>    
+    <!-- コメント追加 -->
+    <action name="write_comment" method="doInit" class="action.CommentAction" >
+        <interceptor-ref name="blogStack"/>
+        <result name="comment">/comment.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
+    <!-- コメント次へボタン -->
+    <action name="mynext" class="action.MypageAction" method="next">
+        <interceptor-ref name="blogStack"/>
+        <result name="mypage">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
+    <!-- コメント前へボタン -->
+    <action name="myback" class="action.MypageAction" method="back">
+        <interceptor-ref name="blogStack"/>
+        <result name="mypage">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>
     <!-- 記事登録編集画面  -->          
-        <action name="cancel_article">
-            <result>/myPage.jsp</result>
-        </action>
-        <!-- コメント登録画面  -->
-           
-        <action name="cancel_comment" method="cancel" class="action.CommentAction">
-            <result name="cancel_comment">/myPage.jsp</result>
-            <result name="user_cancel_comment">/userPage.jsp</result>
-        </action>    
-    </package>
+    <action name="cancel_article">
+        <interceptor-ref name="blogStack"/>
+        <result>/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>    
+    
+    <!-- ログアウト -->           
+    <action name="logout">
+        <result>/login.jsp</result>
+    </action>
+
+
+
+    <!-- ユーザページ -->
+    <!-- 初期画面遷移 -->
+    <action name="mv_index" class="action.UserPageAction" method="moveindex">
+        <result name="success">/index.jsp</result>
+    </action>         
+    <!-- カテゴリのリンク押下 --> 
+    <action name="use_cat_article" class="action.UserPageAction" method="showCatArticles">
+        <result name="success">/userPage.jsp</result>
+    </action>
+    <action name="use_select_article" class="action.UserPageAction" method="showCatArticle">
+        <result name="success">/userPage.jsp</result>
+    </action>                       
+    <!-- コメント追加 -->
+    <action name="user_comment" method="userAddComment" class="action.CommentAction" >
+        <result name="comment">/comment.jsp</result>
+    </action>
+    <!-- コメント次へボタン -->
+    <action name="usernext" class="action.UserPageAction" method="next">
+        <result name="userpage">/userPage.jsp</result>
+    </action>
+    <!-- コメント前へボタン -->
+    <action name="userback" class="action.UserPageAction" method="back">
+        <result name="userpage">/userPage.jsp</result>
+    </action> 
+
+                      
+    <!-- コメント登録画面  -->
+        
+    <action name="add_comment" class="action.CommentAction" method="addComment">
+        <interceptor-ref name="blogStack"/>
+        
+        <interceptor-ref name="token">
+            <param name="includeMethods">*</param>
+        </interceptor-ref>
+        <result name="commit_comment">/myPage.jsp</result>
+        <result name="user_commit_comment">/userPage.jsp</result>
+        <result name="invalid.token">/myPage.jsp</result>
+        <result name="login">/login.jsp</result>
+        <result name="input">/comment.jsp</result>
+    </action>    
+             
+    <action name="cancel_comment" method="cancel" class="action.CommentAction">
+        <interceptor-ref name="blogStack"/>
+        <result name="cancel_comment">/myPage.jsp</result>
+        <result name="user_cancel_comment">/userPage.jsp</result>
+        <result name="login">/login.jsp</result>
+    </action>    
+</package>
 </struts>

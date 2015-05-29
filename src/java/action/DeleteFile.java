@@ -6,6 +6,7 @@
 package action;
 
 import java.io.File;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -13,6 +14,7 @@ import java.io.File;
  */
 public class DeleteFile {
 
+    private static Logger logger = Logger.getLogger(IndexAction.class);
     /**
      *
      * @param f
@@ -22,6 +24,7 @@ public class DeleteFile {
          * ファイルまたはディレクトリが存在しない場合は何もしない
          */
         if (f.exists() == false) {
+            logger.error("何もしない");
             return;
         }
 
@@ -29,10 +32,11 @@ public class DeleteFile {
             /*
              * ファイルの場合は削除する
              */
+            logger.error("ファイル削除" + f.getName());
             f.delete();
 
         } else if (f.isDirectory()) {
-
+            logger.error("ディレクトリ" + f.getName());
             /*
              * ディレクトリの場合は、すべてのファイルを削除する
              */
@@ -49,11 +53,13 @@ public class DeleteFile {
                 /*
                  * 自身をコールし、再帰的に削除する
                  */
+                logger.error("ファイル" + files[i].getName());
                 delFile(files[i]);
             }
             /*
              * 自ディレクトリを削除する
              */
+            logger.error("ディレクトリ削除" + f.getName()+f.getName());
             f.delete();
         }
     }

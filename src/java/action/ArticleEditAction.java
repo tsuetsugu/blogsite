@@ -13,10 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import model.Article;
 import model.ArticleCategory;
 import model.Comment;
@@ -24,6 +21,9 @@ import model.MasterCode;
 import model.User;
 import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.InterceptorRefs;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 
@@ -36,9 +36,15 @@ import org.apache.struts2.convention.annotation.Results;
     @Result(name = "success", location = "/articleEdit.jsp"),
     @Result(name = "cancel_article", location = "/myPage.jsp"),
     @Result(name = "commit_article", location = "/myPage.jsp"),
-    @Result(name = "input", location = "/articleEdit.jsp")
+    @Result(name = "input", location = "/articleEdit.jsp"),
+    @Result(name = "login", location = "/login.jsp"),
 })
 
+
+@ParentPackage("test")
+@InterceptorRefs({
+    @InterceptorRef("blogStack")
+})
 public class ArticleEditAction extends AbstractDBAction {
 
     private static Logger logger = Logger.getLogger(IndexAction.class);
@@ -54,14 +60,6 @@ public class ArticleEditAction extends AbstractDBAction {
     private String status;
     private String post;
 
-    /**
-     * バリデーション
-     */
-    public void validate() {
-        if (date == null) {
-            addActionError("日付を入力してください");
-        }
-    }
 
     public ArrayList<MasterCode> getCatgcds() {
         return catgcds;
@@ -146,11 +144,25 @@ public class ArticleEditAction extends AbstractDBAction {
      * @return
      * @throws Exception
      */
+    
     @Action("/updatepost")
     public String updatepost() throws Exception {
 
         ArrayList<Comment> outcomments = new ArrayList<>();
 
+         if (date == null) {
+            addActionError("日付を入力してください");
+            return "input";
+        }
+        if (title == null || title.isEmpty()){
+            addActionError("タイトルを入力してください");
+            return "input";
+        }
+        if (post == null || post.isEmpty()){
+            addActionError("記事を入力してください");
+            return "input";
+        }    
+        
         User user = getCurrentUser();
 
         long l_post_id = getPostId();
@@ -223,44 +235,7 @@ public class ArticleEditAction extends AbstractDBAction {
         return "cancel_article";
     }
 
-    /**
-     * マスタコード取得
-     *
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    private void getMasterCode(String code_id, ArrayList<MasterCode> mscds) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        try {
-            logger.error("code_id");
-            // カテゴリ取得SQL
-            String sql = "SELECT code, code_name FROM mastercode WHERE code_id=?";
-
-            Connection con = getConnection();
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setString(1, code_id);
-
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                MasterCode mscd = new MasterCode();
-                mscd.setCode(rs.getString("code"));
-                mscd.setCode_name(rs.getString("code_name"));
-                mscds.add(mscd);
-            }
-
-            stmt.close();
-            //con.close();
-        } catch (Exception e) {
-            logger.error(e.toString());
-            throw e;
-
-        }
-    }
-
+ 
     /**
      * 記事登録
      *
